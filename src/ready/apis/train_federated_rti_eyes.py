@@ -193,8 +193,10 @@ def main(args):
     run_epoch = config.model_hyperparameters.epochs
 
     SEED = 42
-
-    FULL_DATA_PATH = os.path.join(Path.home(), DATA_PATH)
+    if os.path.isabs(DATA_PATH):  # #use if training on myriad or externally
+        FULL_DATA_PATH = DATA_PATH
+    else :
+        FULL_DATA_PATH = os.path.join(Path.home(), DATA_PATH)       # use if training locally
     FULL_GITHUB_DATA_PATH = os.path.join(Path.cwd(), GITHUB_DATA_PATH)
     FULL_MODEL_PATH = os.path.join(Path.home(), MODEL_PATH)
     FULL_PRETRAINED_MODEL_PATH = os.path.join(Path.home(), PRETRAINED_MODEL_FOLDER)
