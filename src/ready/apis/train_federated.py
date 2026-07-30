@@ -3,7 +3,7 @@ from ready.models.unet import UNet
 import pathlib
 import torch
 import torch.nn as nn
-#from ready.apis.train_federated_mobious import main as train_federated_mobious
+from ready.apis.train_federated_mobious import main as train_federated_mobious
 import os
 import subprocess
 from ready.apis.train_federated_rti_eyes import main as train_federated_rti_eyes
@@ -45,23 +45,23 @@ def federated(Num_of_rounds, weights):
 
         #os.system("bash scrips/federated/train_federated_openEDS.bash")
 
-        #subprocess.run(["bash", "scripts/federated/train_federated_openEDS.bash"])
+        subprocess.run(["bash", "scripts/federated/train_federated_openEDS.bash"])
 
-        #args_mobious = Namespace(config_file="configs/federated/config_federated_mobious.yaml")
-        #train_federated_mobious(args_mobious)
+        args_mobious = Namespace(config_file="configs/federated/config_federated_mobious.yaml")
+        train_federated_mobious(args_mobious)
 
-        #mobious_weights = torch.load(weights /"mobious_weights.pth")
-        #openEDS_weights = torch.load(weights /"openEDS_weights.pth")
+        mobious_weights = torch.load(weights /"mobious_weights.pth")
+        openEDS_weights = torch.load(weights /"openEDS_weights.pth")
         rti_eyes_weights = torch.load(weights /"rti_eyes_weights.pth")
 
-        #mobious_size = 3559
-        #openEDS_size = 27431
+        mobious_size = 3559
+        openEDS_size = 27431
         rti_eyes_size = 8000
 
-        #dataset_weights = [mobious_weights, openEDS_weights] #rti_eyes_weights]
-        dataset_weights = [rti_eyes_weights]
-        #dataset_sizes = [mobious_size, openEDS_size] #rti_eyes_size]
-        dataset_sizes = [rti_eyes_size]
+        dataset_weights = [mobious_weights, openEDS_weights, rti_eyes_weights]
+        #dataset_weights = [rti_eyes_weights]
+        dataset_sizes = [mobious_size, openEDS_size, rti_eyes_size]
+        #dataset_sizes = [rti_eyes_size]
 
 
         new_global_model = fedAvg(dataset_weights, dataset_sizes)
@@ -84,4 +84,4 @@ if __name__ == "__main__":
     weights = pathlib.Path(weights_path)
     
     federated(5, weights)
-    logger.info(f"##################   DONE #############")
+    logger.info(f"##################   DONE   #############")
