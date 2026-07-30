@@ -68,9 +68,9 @@ def dice(pred_mask, mask, smooth=1e-10, n_classes=1):
 
 def hausdorff1(pred_mask, mask, smooth=1e-10, n_classes=4):
     """
-    Calculate mean Hausdorff Distance across all classes.
+    Calculate mean Hausdorff Distance across all classes (background, sclera, pupil, iris).
     Measures the maximum boundary distance between predicted and ground truth masks.
-    Lower is better. 0 = perfect boundary match.
+    Lower is better. 0 is equal to perfect boundary match.
     
     Args:
         pred_mask: predicted mask (numpy array, values 0 to n_classes-1)

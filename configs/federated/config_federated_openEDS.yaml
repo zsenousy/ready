@@ -22,3 +22,6 @@ model_hyperparameters:
     epochs: 5
     #epochs: 100
     learning_rate: 0.003
+
+## TODO:
+#Add performace metrics, training splitting ratios to openEDS

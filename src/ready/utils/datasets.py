@@ -218,7 +218,7 @@ class Rti_Eyes_Dataset(Dataset):
         try:
             mask = np.array(Image.open(masks_path).convert("RGB"))
         except Exception as e:
-            print(f"Corrupted file skipped: {masks_path} — {e}")
+            print(f"Corrupted file skipped: {masks_path} — {e}") ##skip corrupted .tiff files, usually on Myriad Scratch
             image = torch.zeros(3, 128, 128)
             encode_mask = torch.zeros(128, 128, dtype=torch.long)
             return image, encode_mask
@@ -227,7 +227,7 @@ class Rti_Eyes_Dataset(Dataset):
         encode_mask[np.all(mask == [0,   0,   255], axis=2)] = 1  # sclera
         encode_mask[np.all(mask == [0,   255, 0],   axis=2)] = 2  # iris
         encode_mask[np.all(mask == [255, 0,   0],   axis=2)] = 3  # pupil 
-        # black pixels stay 0, the background
+        # remaining pixels stay 0, the background
 
         encode_mask = torch.tensor(encode_mask, dtype=torch.long)
 
@@ -238,7 +238,7 @@ class Rti_Eyes_Dataset(Dataset):
             image = self.transform(image)
 
         random.seed(seed) # apply this seed to target transform
-        torch.manual_seed(seed) # needed for torchvision 0.7
+        torch.manual_seed(seed) 
         if self.target_transform:
             encode_mask = self.target_transform(encode_mask)
 

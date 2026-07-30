@@ -57,7 +57,7 @@ def main(args):
     config_file = args.config_file
     config = OmegaConf.load(config_file)
 
-    # Import all arguments from config
+    # Import all arguments from config (yaml file)
     DATA_PATH = config.dataset.data_path
     MODEL_PATH = config.dataset.models_path
     GITHUB_DATA_PATH = config.dataset.github_data_path
@@ -92,7 +92,7 @@ def main(args):
     if not os.path.exists(FULL_MODEL_PATH):
         os.makedirs(FULL_MODEL_PATH, exist_ok=True)
 
-    #set to true to use samole data from repo, false to point to one on local computer (actual dataset)
+    #set to true to use sample data from repo, false to point to one on local computer (actual dataset)
     data_path = FULL_GITHUB_DATA_PATH if use_github_data_path_flag else FULL_DATA_PATH
 
     starttime = time.time()  # print(f'Starting training loop at {startt}')
@@ -109,10 +109,10 @@ def main(args):
                                             transforms.RandomHorizontalFlip(p=0.5),
                                             transforms.RandomVerticalFlip(p=0.5),
                                             transforms.RandomRotation(45),
-                                            #transforms.GaussianBlur(kernel_size=(5, 13), sigma=(1, 50)),
+                                            transforms.GaussianBlur(kernel_size=(5, 13), sigma=(1, 50)),
                                             transforms.Normalize(mean=[0.285, 0.456, 0.406], std=[0.529, 0.524, 0.525]),
-                                            #transforms.ElasticTransform(alpha=100.0, sigma=5.0),
-                                            transforms.Resize((128, 128), antialias=True),      #set to 128x128 to test data resizing on model, same with mask
+                                            transforms.ElasticTransform(alpha=100.0, sigma=5.0),
+                                            transforms.Resize((128, 128), antialias=True),      #set to 128x128 to test data resizing on model, same with mask, antialias True to prevent warning messages during training
                                             ])
      #Transforms for masks
     transforms_rotations = transforms.Compose([
@@ -136,6 +136,7 @@ def main(args):
     full_dataset = MobiousDataset(
         data_path, transform=transform_arg ,target_transform=target_transform_arg
         )
+    logger.info(f"Length of trainset: {len(full_dataset)}")
 
     data_splitting_ratios = [TRAIN_SET_RATIO, VALIDATION_SET_RATIO, TEST_SET_RATIO]
 
@@ -164,11 +165,11 @@ def main(args):
 
 
     if not evaluation_with_pretrained_model_flag:
-        #check nuber of parameters of deeplab model (APPX. 11M)
+        #check nuber of parameters of UNet model (APPX. 11M)
         num_params = len(nn.utils.parameters_to_vector(model.parameters()))
         logger.info(f"Number of parameters in model: {num_params}")
 
-        #weight decay to prevent overfitting of model and ADAMW optimizer to improve generalization of model
+        #weight decay to prevent overfitting of model and AdamW optimizer to improve generalization of model
         optimizer = optim.AdamW(model.parameters(),lr= learning_rate, weight_decay=1e-4)  
         loss_fn = nn.CrossEntropyLoss()
 
@@ -186,7 +187,7 @@ def main(args):
                                       "fbeta",
                                       "miou",
                                       "dice",
-                                      "hausdorff_distance",  #It measures the maximum distance between the predicted and ground truth boundaries, providing insight into the worst-case segmentation error.
+                                      "hausdorff_distance",  #measures the maximum distance between the predicted and ground truth boundaries, providing insight into the worst-case segmentation error.
                                       ]
         # Training Metrics
         training_loss_values = []
