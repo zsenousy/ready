@@ -3,8 +3,8 @@
 model:
   inputChannelNumber: 3
   outputChannelNumber: 4
-  imageHeight: 128  #400
-  imageWidth: 128  #640
+  imageHeight: 400
+  imageWidth: 640
   name: "weights_01-Jul-2026_14-17-38.pth"
   # name: "weights_10-May-2025_18-09-20.pth"
   # name: "_weights_26-Apr-2025_19-40-01.pth"
