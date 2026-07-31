@@ -3,11 +3,11 @@ convert_to_onnx
 """
 import os
 from argparse import ArgumentParser
-import torch
-import torch.onnx
 from pathlib import Path
 
 import onnx
+import torch
+import torch.onnx
 from loguru import logger
 from omegaconf import OmegaConf
 from onnxsim import simplify
