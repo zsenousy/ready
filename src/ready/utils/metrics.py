@@ -14,6 +14,24 @@ https://github.com/tanishqgautam/Drone-Image-Semantic-Segmentation/blob/main/sem
 def mIoU(pred_mask, mask, smooth=1e-10, n_classes=1):
     """
         Mean Intersection over Union (IoU) over defined number of classes.
+        IoU and jaccard score is actually the same! For reference, please see Table 3 below:
+        Maier-Hein, Lena, Annika Reinke, Patrick Godau, Minu D. Tizabi, Florian Buettner, Evangelia Christodoulou, Ben Glocker, et al.
+        ‘Metrics Reloaded: Recommendations for Image Analysis Validation’. Nature Methods 21, no. 2 (February 2024): 195–212. https://doi.org/10.1038/s41592-023-02151-z.
+
+
+        Equation: IoU = (|X & Y|)/ (|X or Y|)
+
+        Args:
+            pred_mask: predicted mask
+            mask: ground truth mask
+            smooth: smoothing value
+            n_classes: number of classes
+            
+    # with torch.no_grad():
+    #     pred_mask = F.softmax(pred_mask, dim=1)
+    #     pred_mask = torch.argmax(pred_mask, dim=1)
+    #     pred_mask = pred_mask.contiguous().view(-1)
+    #     mask = mask.contiguous().view(-1)
             """
     
     iou_per_class = []
