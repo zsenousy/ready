@@ -15,6 +15,8 @@ from onnxsim import simplify
 from ready.models.unet import UNet
 from ready.utils.helpers import export_model
 
+torch.set_num_threads(1)
+
 if __name__ == "__main__":
     """
     Convert pytorch to onnx model and onnx model simplification
@@ -45,7 +47,7 @@ if __name__ == "__main__":
     models_path_output_name = FULL_MODEL_PATH + "/" + model_name + ".onnx"
 
     # model = SegNet(in_chn=1, out_chn=4, BN_momentum=0.5)
-    model = UNet(nch_in=input_channel_n, nch_out=output_channel_n)
+    model = UNet(nch_in=input_channel_n, nch_out=output_channel_n, nch_ker=64)
     model = model.to(device)
 
     model.load_state_dict(
