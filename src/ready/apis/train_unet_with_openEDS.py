@@ -270,4 +270,3 @@ if __name__ == "__main__":
     endtime = time.time()
     elapsedtime = endtime - starttime
     print(f"Elapsed time for the training loop: {elapsedtime/60} (mins)")
-
