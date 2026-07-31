@@ -1,7 +1,6 @@
 import os
 from argparse import ArgumentParser
 from pathlib import Path
-import pathlib
 
 import matplotlib.image as mimg
 import matplotlib.pyplot as plt
@@ -10,14 +9,58 @@ import torch
 import torch.nn.functional as F
 from loguru import logger
 from omegaconf import OmegaConf
+import pathlib
 
 from ready.models.unet import UNet
-from ready.utils.datasets import MobiousDataset
+from ready.utils.datasets import Rti_Eyes_Dataset
 from ready.utils.metrics import evaluate
 
+# TODO
+# Make sure we have a common path for models to avoid looking where the model path is!
 
 if __name__ == "__main__":
-   
+    """
+    Script to test inference of Mobious models
+
+    Usage:
+        Run this script from the root directory of the project:
+        python src/ready/apis/inference_mobious.py -c config/config.yaml
+
+    Arguments:
+        -p, --confi_file: Set config filename with path. Default is none.
+
+    Tested models
+        model_name="_weights_04-09-24_16-31"
+            #Epoch 200:
+            #Average loss @ epoch: 9.453074308542105
+            #Saved PyTorch Model State to weights/_weights_04-09-24_16-31.pth
+            #Elapsed time for the training loop: 96.35676774978637 (mins)
+
+        model_name="_weights_10-09-24_03-46-29"
+            # Epoch 100:
+            # Average loss @ epoch: 0.0028544804081320763
+            # Saved PyTorch Model State to models/_weights_10-09-24_03-46-29.pth
+            # Elapsed time for the training loop: 2.1838908473650616 (mins)
+        model_name="_weights_10-09-24_04-50-40"
+        run_epoch = 400
+                # Average loss @ epoch: 0.0006139971665106714
+                # Saved PyTorch Model State to models/_weights_10-09-24_04-50-40.pth
+                # Elapsed time for the training loop: 13.326771756013235 (mins)
+        model_name = "_weights_08-11-24_16-38-01"
+        run_epoch = 100 #noweights
+                #Average loss @ epoch: 0.001589389712471593
+                #Saved PyTorch Model State to models/_weights_10-09-24_06-35-14.pth
+                #Elapsed time for the training loop: 47.66647284428279 (mins)
+        model_name = "_weights_10-09-24_06-35-14" #BASELINE model
+        model_name = "_weights_12-12-24_10-11-36" #10 epochs without augmentations
+        model_name = "_weights_12-12-24_11-05-12" #10 epochs with augmentations (rotations)
+
+    References
+        skmetrics: https://github.com/MatejVitek/SSBC/blob/master/evaluation/segmentation.py
+        pixel_accuracy, mIoU:
+        https://github.com/tanishqgautam/Drone-Image-Semantic-Segmentation/blob/main/semantic-segmentation-pytorch.ipynb
+        https://medium.com/yodayoda/segmentation-for-creating-maps-92b8d926cf7e
+    """
     parser = ArgumentParser(description="Plot inference for models pth and ONNX")
     parser.add_argument("-c", "--config_file", help="Config filename with path", type=str)
     args = parser.parse_args()
@@ -42,7 +85,7 @@ if __name__ == "__main__":
         logger.info(f"CUDA is available")
         import onnxruntime
 
-    trainset = MobiousDataset(
+    trainset = Rti_Eyes_Dataset(
         str(FULL_DATA_PATH)
         # str(FULL_GITHUB_DATA_PATH)+"/sample-frames/test640x400_5samples" # 5 frames
     )
@@ -54,7 +97,6 @@ if __name__ == "__main__":
     )
     logger.info(f"trainloader.batch_size {trainloader.batch_size}")
 
-   
     weighted_files = list(Path(FULL_MODEL_PATH).rglob("*.pth"))
     model = UNet(nch_in=3, nch_out=4, nch_ker=64)
     model = model.to(device)
@@ -62,14 +104,14 @@ if __name__ == "__main__":
         latest_modification = max(weighted_files, key = lambda f: f.stat().st_mtime)
         print(f"Loading: {latest_modification}")
         model.load_state_dict(torch.load(latest_modification))
-        model.eval()
-        data_root = "Scratch/scratch/ccaekqu/datasets/ready/ready/inference/inference_results/mobious"
+        data_root = "Scratch/scratch/ccaekqu/datasets/ready/ready/inference/inference_results/rti_eyes"
         data_path = os.path.join(pathlib.Path.home(), data_root)
+        model.eval()
     else:
         logger.info("No weights found") #debugging
 
     #checkpoint_path = FULL_MODEL_PATH + '/' + str(model_name) + ".pth"
-    #model = UNet(nch_in=3, nch_out=4)
+    #model = UNet(nch_in=3, nch_out=4, nch_ker=64)
     #model = model.to(device)
     #model.load_state_dict(torch.load(checkpoint_path, map_location=device, weights_only=False))
     #model.eval()
@@ -89,8 +131,6 @@ if __name__ == "__main__":
                 else tensor.cpu().numpy()
             )
 
-        
-    #model.eval()
     ### MAIN LOOP
     with torch.no_grad():
         f, ax = plt.subplots(7, 6)
@@ -103,7 +143,16 @@ if __name__ == "__main__":
                 image = images[0].unsqueeze(0)
                 labels = labels.cuda()
                 label = labels[0].unsqueeze(0)
-
+                # print(f"images.size() {images.size()}")
+                # #torch.Size([batch_size_, 3, 400, 640])
+                # print(f"image.size() {image.size()}")
+                # #torch.Size([1, 3, 400, 640])
+                # print(f"labels.size() {labels.size()}")
+                # #labels.size() torch.Size([batch_size_, 400, 640])
+                # #WRONGtorch.Size([batch_size_, 4, 400, 640])
+                # print(f"label.size() {label.size()}")
+                # #label.size() torch.Size([1, 400, 640])
+                # #WRONG #torch.Size([1, 4, 400, 640])
             else:
                 images = images.cpu()
                 image = images[0].unsqueeze(0)
@@ -290,3 +339,4 @@ if __name__ == "__main__":
             plt.close()
             break
 
+    

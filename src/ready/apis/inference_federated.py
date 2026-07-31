@@ -1,0 +1,111 @@
+import os
+from argparse import ArgumentParser
+from pathlib import Path
+
+import matplotlib.image as mimg
+import matplotlib.pyplot as plt
+import numpy as np
+import torch
+import torch.nn.functional as F
+from loguru import logger
+from omegaconf import OmegaConf
+import subprocess
+
+from ready.models.unet import UNet
+from ready.utils.datasets import MobiousDataset
+from argparse import Namespace
+from ready.utils.metrics import evaluate
+from src.ready.apis.inference_mobious import main as inference_mobious
+from src.ready.apis.inference_openEDS import main as inference_openEDS
+from src.ready.apis.inference_rti_eyes import main as inference_rti_eyes
+from ready.utils.utils import (HOME_PATH, create_data_loaders, evaluate_model,
+                               loss_values_file_writer,
+                               performance_file_writer,
+                               sanity_check_trainloader,
+                               test_accuracy_file_writer, training_loop,
+                               validation_loop)
+
+# TODO
+# Make sure we have a common path for models to avoid looking where the model path is!
+
+if __name__ == "__main__":
+
+    parser = ArgumentParser(description="Plot inference for models pth and ONNX")
+    parser.add_argument("-c", "--config_file", help="Config filename with path", type=str)
+    args = parser.parse_args()
+
+    config_file = args.config_file
+    config = OmegaConf.load(config_file)
+    DATA_PATH = config.dataset.data_path
+    MODEL_PATH = config.dataset.models_path
+    GITHUB_DATA_PATH = config.dataset.github_data_path
+    INFERENCE_RESULTS = config.dataset.inference_results
+
+    FULL_DATA_PATH = os.path.join(Path.home(), DATA_PATH)
+    FULL_GITHUB_DATA_PATH = os.path.join(Path.cwd(), GITHUB_DATA_PATH)
+    FULL_MODEL_PATH = os.path.join(Path.home(), MODEL_PATH)
+    FULL_INFERENCE_RESULTS = os.path.join(Path.home(), INFERENCE_RESULTS)
+
+
+
+    input_model_name=config.model.input_model_name
+    model_name = input_model_name[:-4]
+    logger.info(f"model_name {model_name}")
+
+    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+    cuda_available = torch.cuda.is_available()
+    if cuda_available:
+        logger.info(f"CUDA is available")
+        import onnxruntime
+
+    trainset = MobiousDataset(
+        str(FULL_GITHUB_DATA_PATH)+"/sample-frames/test640x400_1frame_1_1i_Ll_1" # 1 frame
+        # str(FULL_GITHUB_DATA_PATH)+"/sample-frames/test640x400_5samples" # 5 frames
+    )
+    logger.info(f"Length of trainset: {len(trainset)}")
+
+    batch_size_ = 8  # 8 original
+    trainloader = torch.utils.data.DataLoader(
+        trainset, batch_size=batch_size_, shuffle=True, num_workers=4
+    )
+    logger.info(f"trainloader.batch_size {trainloader.batch_size}")
+
+
+    weighted_files = list(Path(FULL_MODEL_PATH).rglob("*.pth"))
+    model = UNet(nch_in=3, nch_out=4, nch_ker=64)
+    model = model.to(device)
+    if weighted_files:
+        latest_modification = max(weighted_files, key = lambda f: f.stat().st_mtime)
+        print(f"Loading: {latest_modification}")
+        model.load_state_dict(torch.load(latest_modification))
+        model.eval()
+    else:
+        logger.info("No weights found") #debugging
+
+    if cuda_available:
+        #### ONNX model
+        onnx_checkpoint_path = str(FULL_MODEL_PATH) + '/' + str(model_name) + "-sim.onnx"
+        ort_session = onnxruntime.InferenceSession(
+            onnx_checkpoint_path, providers=["CPUExecutionProvider"]
+        )
+
+        # UserWarning: Specified provider 'CUDAExecutionProvider' is not in available
+        def to_numpy(tensor):
+            return (
+                tensor.detach().cpu().numpy()
+                if tensor.requires_grad
+                else tensor.cpu().numpy()
+            )
+
+
+        args_mobious = Namespace(config_file="configs/models/unet/config_inference_mobious.yaml")
+        inference_mobious(args_mobious)
+
+        inference_openEDS()
+
+        args_rti_eyes = Namespace(config_file="configs/models/unet/config_inference_rti_eyes.yaml")
+        inference_rti_eyes()
+
+        test_accuracy = evaluate_model(model=model, test_loader=test_loader, device=device)
+        test_accuracy_file_writer(folder_path=PATH, test_accuracy=test_accuracy,
+                                          current_time_stamp=current_time_stamp, pretrained_model_flag=evaluation_with_pretrained_model_flag)

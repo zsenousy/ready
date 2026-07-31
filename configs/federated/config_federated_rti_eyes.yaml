@@ -6,8 +6,8 @@ dataset:
     use_github_data_path_flag : False # data_path = FULL_GITHUB_DATA_PATH if use_github_data_path_flag else FULL_DATA_PATH
     github_data_path: "data/rti-eyes/sample-frames"
     #data_path: "downloads/ready/datasets/s-natural/s-natural/10" 
-    #data_path: "Scratch/scratch/ccaekqu/datasets/s-natural/s-natural/s-natural"
-    data_path: "/rdss/rd02/ritd-ag-project-rd02iw-mxoch87/datasets/s-natural/s-natural"
+    data_path: "Scratch/scratch/ccaekqu/datasets/s-natural/s-natural/s-natural"
+    #data_path: "/rdss/rd02/ritd-ag-project-rd02iw-mxoch87/datasets/s-natural/s-natural"
     models_path: "Scratch/scratch/ccaekqu/datasets/ready/ready/rti_eyes/models"
     #models_path: "downloads/ready/datasets/ready/rti_eyes/models"
     checkpoint_path: "datasets/?" #TODO checkpoint_path
