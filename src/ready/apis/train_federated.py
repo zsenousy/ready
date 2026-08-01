@@ -10,6 +10,10 @@ from ready.apis.train_federated_rti_eyes import main as train_federated_rti_eyes
 #from loguru import logger
 from argparse import Namespace
 from loguru import logger
+from ready.utils.datasets import MobiousDataset, EyeDataset, Rti_Eyes_Dataset
+from omegaconf import OmegaConf
+from pathlib import Path
+
 
 #import numpy
 #import torchvision
@@ -45,18 +49,33 @@ def federated(Num_of_rounds, weights):
 
         #os.system("bash scrips/federated/train_federated_openEDS.bash")
 
-        subprocess.run(["bash", "scripts/federated/train_federated_openEDS.bash"])
 
         args_mobious = Namespace(config_file="configs/federated/config_federated_mobious.yaml")
         train_federated_mobious(args_mobious)
+
+        
+        subprocess.run(["bash", "scripts/federated/train_federated_openEDS.bash"])
+
+        
 
         mobious_weights = torch.load(weights /"mobious_weights.pth")
         openEDS_weights = torch.load(weights /"openEDS_weights.pth")
         rti_eyes_weights = torch.load(weights /"rti_eyes_weights.pth")
 
-        mobious_size = 3559
-        openEDS_size = 27431
-        rti_eyes_size = 8000
+        config_mobious = OmegaConf.load("config/federated/config_federated_mobious.yaml")
+        config_openEDS = OmegaConf.load("config/federated/config_federated_openEDS.yaml")
+        config_rti = OmegaConf.load("config/federated/config_federated_rti_eyes.yaml")
+
+        mobious_path = os.path.join(Path.home(), config_mobious.datasets.data_path)
+        openeds_path = os.path.join(Path.home() ,config_openEDS.datasets.data_path)
+        rti_path = os.path.join(Path.home(), config_rti.datasets.data_path)
+
+
+        mobious_size = len(MobiousDataset(mobious_path))
+        openEDS_size = len(EyeDataset(openeds_path))
+        rti_eyes_size = len(Rti_Eyes_Dataset(rti_path))
+
+        
 
         dataset_weights = [mobious_weights, openEDS_weights, rti_eyes_weights]
         #dataset_weights = [rti_eyes_weights]
