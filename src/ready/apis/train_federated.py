@@ -4,6 +4,7 @@ import pathlib
 import torch
 import torch.nn as nn
 from ready.apis.train_federated_mobious import main as train_federated_mobious
+from ready.apis.inference_federated import main as inference_federated
 import os
 import subprocess
 from ready.apis.train_federated_rti_eyes import main as train_federated_rti_eyes
@@ -108,3 +109,8 @@ if __name__ == "__main__":
     
     federated(5, weights)
     logger.info(f"##################   DONE   #############")
+
+    logger.info(f"############ INFERENCE FEDERATED ############")
+
+    args_inference = Namespace(config_file="configs/federated/config_inference_federated.yaml")
+    inference_federated(args_inference)

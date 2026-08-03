@@ -16,7 +16,7 @@ import pathlib
 
 from src.ready.models.unet import UNet
 from src.ready.utils.datasets import EyeDataset
-from src.ready.utils.utils import set_data_directory
+#from src.ready.utils.utils import set_data_directory
 from pathlib import Path
 from loguru import logger
 
@@ -33,7 +33,7 @@ if __name__ == "__main__":
     FULL_DATA_PATH = os.path.join(Path.home(), DATA_PATH)
     FULL_MODEL_PATH = os.path.join(Path.home(), MODEL_PATH)
 
-    set_data_directory("Scratch/scratch/ccaekqu/datasets/ready/ready")
+    #set_data_directory("Scratch/scratch/ccaekqu/datasets/ready/ready")
 
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
@@ -42,7 +42,7 @@ if __name__ == "__main__":
     # trainset = EyeDataset("sample-frames/val3frames")
     # #for     set_data_directory("ready/data/openEDS")
     trainset = EyeDataset(
-        "openEDS/openEDS"
+        str(FULL_DATA_PATH)
     )  # for     set_data_directory("ready/data/openEDS")
 
     print("Length of trainset:", len(trainset))

@@ -4,6 +4,8 @@ model:
 dataset:
     models_path: "Scratch/scratch/ccaekqu/datasets/ready/ready/mobious/models"
     github_data_path: "data/mobious"
-    data_path: "Scratch/scratch/ccaekqu/datasets/mobious/mobious/MOBIOUS/train100per_1144"  ##CHANGE TO TEST IMAGE PATH WHEN U FIND ONE, LEAVING AT MOBIOUS FOR NOW
+    mobious_data_path: "Scratch/scratch/ccaekqu/datasets/mobious/mobious/MOBIOUS/train100per_1144"  ##CHANGE TO TEST IMAGE PATH WHEN U FIND ONE, LEAVING AT MOBIOUS FOR NOW
+    openEDS_data_path: "Scratch/scratch/ccaekqu/datasets/ready/ready/openEDS/openEDS"
+    rti_eyes_data_path: "Scratch/scratch/ccaekqu/datasets/s-natural/s-natural/s-natural"
     checkpoint_path: "datasets/?"
     inference_results: "Scratch/scratch/ccaekqu/datasets/ready/ready/inference"     ##store output results of inference
