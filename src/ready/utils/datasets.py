@@ -213,8 +213,11 @@ class Rti_Eyes_Dataset(Dataset):
         masks_path = os.path.join(self.f_dir, "mask-withoutskin-noglasses1", self.masks_path[idx])
 
         #converting image to pytorch so the float type can be attached to it
-        image = torch.tensor(np.array(Image.open(img_path).convert("RGB")), dtype=torch.float) / 255
-        image = image.permute(2, 0, 1)  # convert from [H, W, 3] to [3, H, W]
+        #image = torch.tensor(np.array(Image.open(img_path).convert("RGB")), dtype=torch.float) / 255
+        image = read_image(img_path).type(torch.float) / 255
+        if image.shape[0] == 1: # grayscale -> RGB
+            image = image.repeat(3, 1, 1)   
+        #image = image.permute(2, 0, 1)  # convert from [H, W, 3] to [3, H, W]
         try:
             mask = np.array(Image.open(masks_path).convert("RGB"))
         except Exception as e:
