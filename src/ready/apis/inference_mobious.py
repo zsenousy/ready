@@ -286,7 +286,7 @@ if __name__ == "__main__":
                 ax[6, 3].set_title("ort_outs[:,:,2]")
                 ax[6, 4].set_title("ort_outs[:,:,3]")
 
-            plt.savefig(f" {data_root} / result_{j}.png")
+            plt.savefig(f" {data_path} / result_{j}.png")
             plt.close()
             break
 
