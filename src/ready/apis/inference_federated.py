@@ -55,7 +55,7 @@ def main(args):
     cuda_available = torch.cuda.is_available()
     if cuda_available:
         logger.info(f"CUDA is available")
-        import onnxruntime
+        #import onnxruntime
 
 
     weighted_files = list(Path(FULL_MODEL_PATH).rglob("*.pth"))
@@ -69,12 +69,12 @@ def main(args):
     else:
         logger.info("No weights found") #debugging
 
-    if cuda_available:
+    #if cuda_available:
         #### ONNX model
-        onnx_checkpoint_path = str(FULL_MODEL_PATH) + '/' + str(model_name) + "-sim.onnx"
-        ort_session = onnxruntime.InferenceSession(
-            onnx_checkpoint_path, providers=["CPUExecutionProvider"]
-        )
+      #  onnx_checkpoint_path = str(FULL_MODEL_PATH) + '/' + str(model_name) + "-sim.onnx"
+      #  ort_session = onnxruntime.InferenceSession(
+       #     onnx_checkpoint_path, providers=["CPUExecutionProvider"]
+      #  )
 
         # UserWarning: Specified provider 'CUDAExecutionProvider' is not in available
         def to_numpy(tensor):
@@ -100,15 +100,15 @@ def main(args):
             output = model(image)
             pred = torch.argmax(F.softmax(output, dim=1), dim=1)
 
-            # save one plot
-            if j == 1:
+            #save at least first 5 images for each dataset
+            if j <= 5:      
                 fig, ax = plt.subplots(1, 3, figsize=(12, 4))
                 ax[0].imshow(image.squeeze(0).permute(1, 2, 0).cpu())
-                ax[0].set_title("Mobious - Original")
+                ax[0].set_title("Mobious - Original Image")
                 ax[1].imshow(label.squeeze(0).cpu())
-                ax[1].set_title("Ground Truth")
+                ax[1].set_title("Mobious - Mask")
                 ax[2].imshow(pred.squeeze(0).cpu())
-                ax[2].set_title("Prediction")
+                ax[2].set_title("Model Prediction")
                 plt.savefig(f"{FULL_INFERENCE_RESULTS}/mobious/mobious_result.png")
                 plt.close()
 
@@ -134,14 +134,14 @@ def main(args):
             output = model(image)
             pred = torch.argmax(F.softmax(output, dim=1), dim=1)
 
-            if j == 1:
+            if j <=  5:
                 fig, ax = plt.subplots(1, 3, figsize=(12, 4))
                 ax[0].imshow(image.squeeze(0).permute(1, 2, 0).cpu())
-                ax[0].set_title("openEDS - Original")
+                ax[0].set_title("openEDS - Original Image")
                 ax[1].imshow(label.squeeze(0).cpu())
-                ax[1].set_title("Ground Truth")
+                ax[1].set_title("OpenEDS - Mask")
                 ax[2].imshow(pred.squeeze(0).cpu())
-                ax[2].set_title("Prediction")
+                ax[2].set_title("Model Prediction")
                 plt.savefig(f"{FULL_INFERENCE_RESULTS}/openEDS/openEDS_result.png")
                 plt.close()
 
@@ -167,14 +167,14 @@ def main(args):
             output = model(image)
             pred = torch.argmax(F.softmax(output, dim=1), dim=1)
 
-            if j == 1:
+            if j <= 5:
                 fig, ax = plt.subplots(1, 3, figsize=(12, 4))
                 ax[0].imshow(image.squeeze(0).permute(1, 2, 0).cpu())
-                ax[0].set_title("RTI-Eyes - Original")
+                ax[0].set_title("RTI-Eyes - Original Image")
                 ax[1].imshow(label.squeeze(0).cpu())
-                ax[1].set_title("Ground Truth")
+                ax[1].set_title("RTI-Eyes - Mask")
                 ax[2].imshow(pred.squeeze(0).cpu())
-                ax[2].set_title("Prediction")
+                ax[2].set_title("Model Prediction")
                 plt.savefig(f"{FULL_INFERENCE_RESULTS}/rti_eyes/rti_result.png")
                 plt.close()
 
