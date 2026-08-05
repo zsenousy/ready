@@ -83,7 +83,7 @@ if __name__ == "__main__":
     cuda_available = torch.cuda.is_available()
     if cuda_available:
         logger.info(f"CUDA is available")
-        import onnxruntime
+        #import onnxruntime
 
     trainset = Rti_Eyes_Dataset(
         str(FULL_DATA_PATH)
@@ -116,12 +116,12 @@ if __name__ == "__main__":
     #model.load_state_dict(torch.load(checkpoint_path, map_location=device, weights_only=False))
     #model.eval()
 
-    if cuda_available:
+    #if cuda_available:
         #### ONNX model
-        onnx_checkpoint_path = str(FULL_MODEL_PATH) + '/' + str(model_name) + "-sim.onnx"
-        ort_session = onnxruntime.InferenceSession(
-            onnx_checkpoint_path, providers=["CPUExecutionProvider"]
-        )
+       # onnx_checkpoint_path = str(FULL_MODEL_PATH) + '/' + str(model_name) + "-sim.onnx"
+       # ort_session = onnxruntime.InferenceSession(
+      #      onnx_checkpoint_path, providers=["CPUExecutionProvider"]
+     #   )
 
         # UserWarning: Specified provider 'CUDAExecutionProvider' is not in available
         def to_numpy(tensor):
@@ -133,7 +133,7 @@ if __name__ == "__main__":
 
     ### MAIN LOOP
     with torch.no_grad():
-        f, ax = plt.subplots(7, 6)
+        f, ax = plt.subplots(1, 3, figsize=(12, 4))
         cuda_available = torch.cuda.is_available()
         for j, data in enumerate(trainloader, 1):
             print(j)
@@ -166,7 +166,7 @@ if __name__ == "__main__":
             # print(outputs.squeeze(0).size()) #torch.Size([4, 400, 640])/
 
             ##PREDICTION
-            pred_softmax = F.softmax(outputs, dim=1)
+          #  pred_softmax = F.softmax(outputs, dim=1)
             # print(f"pred.size() {pred.size()}") #pred.size() torch.Size([1, 4, 400, 640])
 
             ## PREDICTION argmax(softmax(x))
@@ -175,20 +175,20 @@ if __name__ == "__main__":
             # print(pred_mask.squeeze(0).size()) #torch.Size([400, 640])
 
             ## PRECTION argmax(x)
-            outputs_argmax = torch.argmax(outputs[0], dim=0)
+           # outputs_argmax = torch.argmax(outputs[0], dim=0)
             # print(outputs_argmax.size()) #torch.Size([400, 640])
 
-            if cuda_available:
+          # if cuda_available:
                 ##ONNX model
-                ort_inputs = {ort_session.get_inputs()[0].name: to_numpy(image)}
-                ort_outs = torch.tensor(
-                    np.asarray(ort_session.run(None, ort_inputs))
-                )  # print(ort_outs.size()) #torch.Size([1, 1, 4, 400, 640])
-                ort_outs = ort_outs.squeeze(0).squeeze(0)  #
+            #    ort_inputs = {ort_session.get_inputs()[0].name: to_numpy(image)}
+           #     ort_outs = torch.tensor(
+             #       np.asarray(ort_session.run(None, ort_inputs))
+           #     )  # print(ort_outs.size()) #torch.Size([1, 1, 4, 400, 640])
+           #     ort_outs = ort_outs.squeeze(0).squeeze(0)  #
                 # print(ort_outs.size()) #torch.Size([4, 400, 640])
-                ort_outs_argmax = torch.argmax(
-                    ort_outs, dim=0
-                )  # print(ort_outs_argmax.size())#torch.Size([400, 640])
+          #      ort_outs_argmax = torch.argmax(
+          #          ort_outs, dim=0
+          #      )  # print(ort_outs_argmax.size())#torch.Size([400, 640])
 
             ## Details of input image
             ### FROM holoscan-sdk API
@@ -198,12 +198,12 @@ if __name__ == "__main__":
             # tensor_.mean 0.2402516007423401
 
             # image
-            print(
-                f"tensor.shape={image.shape}"
-            )  # tensor.shape=torch.Size([1, 3, 400, 640])
-            print(f"image min {torch.min(image)}")  # image min 1.0
-            print(f"image max {torch.max(image)}")  # image max 252.0
-            print(f"image mean {torch.mean(image)}")  # image mean 61.907188415527344
+         #  print(
+         #       f"tensor.shape={image.shape}"
+         #   )  # tensor.shape=torch.Size([1, 3, 400, 640])
+         #   print(f"image min {torch.min(image)}")  # image min 1.0
+         #   print(f"image max {torch.max(image)}")  # image max 252.0
+         #   print(f"image mean {torch.mean(image)}")  # image mean 61.907188415527344
 
             ### FROM holoscan-sdk API
             # unet_out tensor.shape=(1, 4, 400, 640)
@@ -212,128 +212,128 @@ if __name__ == "__main__":
             # tensor.mean -10.790840148925781
 
             # outputs
-            print(
-                f"outputs.size() {outputs.size()}"
-            )  # outputs.size() torch.Size([1, 4, 400, 640])
-            print(f"outputs min {torch.min(outputs)}")  # outputs min -35.6884765625
-            print(f"outputs max {torch.max(outputs)}")  # outputs max 18.10123634338379
-            print(f"outputs mean {torch.mean(outputs)}")  # outputs mean -4.6653242111206055
+         #  print(
+         #       f"outputs.size() {outputs.size()}"
+         #   )  # outputs.size() torch.Size([1, 4, 400, 640])
+         #   print(f"outputs min {torch.min(outputs)}")  # outputs min -35.6884765625
+         #   print(f"outputs max {torch.max(outputs)}")  # outputs max 18.10123634338379
+         #   print(f"outputs mean {torch.mean(outputs)}")  # outputs mean -4.6653242111206055
 
             # pred_softmax
-            print(
-                f"outputs.size() {pred_softmax.size()}"
-            )  # outputs.size() torch.Size([1, 4, 400, 640])
-            print(
-                f"pred_softmax min {torch.min(pred_softmax)}"
-            )  # tensor.min 3.281325626518147e-23
-            print(f"pred_softmax max {torch.max(pred_softmax)}")  # tensor.max 1.0
-            print(f"pred_softmax mean {torch.mean(pred_softmax)}")  # tensor.mean 0.25
+          #  print(
+          #      f"outputs.size() {pred_softmax.size()}"
+           # )  # outputs.size() torch.Size([1, 4, 400, 640])
+          #  print(
+            #    f"pred_softmax min {torch.min(pred_softmax)}"
+          #  )  # tensor.min 3.281325626518147e-23
+          #  print(f"pred_softmax max {torch.max(pred_softmax)}")  # tensor.max 1.0
+          #  print(f"pred_softmax mean {torch.mean(pred_softmax)}")  # tensor.mean 0.25
 
-            if cuda_available:
+          #  if cuda_available:
                 # ort_outs
-                print(
-                    f"ort_outs.size() {ort_outs.unsqueeze(0).size()}"
-                )  # ort_outs.size() torch.Size([4, 400, 640])
-                print(f"ort_outs min {torch.min(ort_outs)}")  # ort_outs min -35.69083023071289
-                print(f"ort_outs max {torch.max(ort_outs)}")  # ort_outs max 18.10032081604004
-                print(
-                    f"ort_outs mean {torch.mean(ort_outs)}"
-                )  # ort_outs mean -4.665435314178467
+           #     print(
+            #        f"ort_outs.size() {ort_outs.unsqueeze(0).size()}"
+             #   )  # ort_outs.size() torch.Size([4, 400, 640])
+              #  print(f"ort_outs min {torch.min(ort_outs)}")  # ort_outs min -35.69083023071289
+               # print(f"ort_outs max {torch.max(ort_outs)}")  # ort_outs max 18.10032081604004
+                #print(
+                 #   f"ort_outs mean {torch.mean(ort_outs)}"
+                #)  # ort_outs mean -4.665435314178467
 
             # #######################################
             # ##PLOTTING
             # RAW IMAGE
-            ax[0, 0].imshow(image.permute(0, 2, 3, 1).squeeze(0).to(torch.long).cpu())
-            ax[0, 1].imshow(
-                image.permute(0, 2, 3, 1).squeeze(0)[:, :, 0].to(torch.long).cpu()
-            )
-            ax[0, 2].imshow(
-                image.permute(0, 2, 3, 1).squeeze(0)[:, :, 1].to(torch.long).cpu()
-            )
-            ax[0, 3].imshow(
-                image.permute(0, 2, 3, 1).squeeze(0)[:, :, 2].to(torch.long).cpu()
-            )
+            ax[0].imshow(image.permute(0, 2, 3, 1).squeeze(0).to(torch.long).cpu())
+            #ax[0, 1].imshow(
+             #   image.permute(0, 2, 3, 1).squeeze(0)[:, :, 0].to(torch.long).cpu()
+            #)
+            #ax[0, 2].imshow(
+            #    image.permute(0, 2, 3, 1).squeeze(0)[:, :, 1].to(torch.long).cpu()
+            #)
+            #ax[0, 3].imshow(
+            #    image.permute(0, 2, 3, 1).squeeze(0)[:, :, 2].to(torch.long).cpu()
+            #)
             # ax[0,1].imshow( image.permute(0, 2, 3, 1).squeeze(0)[:,:,0].to(torch.long).cpu() )
-            ax[0, 0].set_ylabel("RAW [400,640,3]")
-            ax[0, 1].set_title("ch0")
-            ax[0, 2].set_title("ch1")
-            ax[0, 3].set_title("ch2")
+            ax[0].set_ylabel("ORIGINAL IMAGE[400,640,3]")
+         #   ax[0, 1].set_title("ch0")
+          #  ax[0, 2].set_title("ch1")
+           # ax[0, 3].set_title("ch2")
 
             # MASKS
             # print(label.permute(0, 2, 3, 1).squeeze(0).size()) #torch.Size([400, 640, 4])
-            ax[1, 0].imshow(label.squeeze(0).cpu())
-            ax[1, 1].imshow(label.squeeze(0).cpu() > 0)
-            ax[1, 2].imshow(label.squeeze(0).cpu() > 1)
-            ax[1, 3].imshow(label.squeeze(0).cpu() > 2)
-            ax[1, 4].imshow(label.squeeze(0).cpu() > 3)
-            ax[1, 0].set_ylabel("label[400,640]")
-            ax[1, 1].set_title("label>0")
-            ax[1, 2].set_title("label>1")
-            ax[1, 3].set_title("label>2")
-            ax[1, 4].set_title("label>3")
+            ax[1].imshow(label.squeeze(0).cpu())
+           # ax[1, 1].imshow(label.squeeze(0).cpu() > 0)
+           # ax[1, 2].imshow(label.squeeze(0).cpu() > 1)
+          #  ax[1, 3].imshow(label.squeeze(0).cpu() > 2)
+         #   ax[1, 4].imshow(label.squeeze(0).cpu() > 3)
+            ax[1].set_ylabel("MASK[400,640]")
+        #    ax[1, 1].set_title("label>0")
+        #    ax[1, 2].set_title("label>1")
+          #  ax[1, 3].set_title("label>2")
+        #    ax[1, 4].set_title("label>3")
 
             # ##CHANNEL PREDICTIONS
-            ax[2, 0].imshow(pred_softmax.permute(0, 2, 3, 1).squeeze(0).detach().cpu())
-            ax[2, 1].imshow(pred_softmax[:, 0, :, :].squeeze(0).detach().cpu())
-            ax[2, 2].imshow(pred_softmax[:, 1, :, :].squeeze(0).detach().cpu())
-            ax[2, 3].imshow(pred_softmax[:, 2, :, :].squeeze(0).detach().cpu())
-            ax[2, 4].imshow(pred_softmax[:, 3, :, :].squeeze(0).detach().cpu())
-            ax[2, 0].set_title("pred_softmax [400,640,4]")
-            ax[2, 1].set_title("ch0")
-            ax[2, 2].set_title("ch1")
-            ax[2, 3].set_title("ch2")
-            ax[2, 4].set_title("ch3")
+         #   ax[2, 0].imshow(pred_softmax.permute(0, 2, 3, 1).squeeze(0).detach().cpu())
+        #    ax[2, 1].imshow(pred_softmax[:, 0, :, :].squeeze(0).detach().cpu())
+        #    ax[2, 2].imshow(pred_softmax[:, 1, :, :].squeeze(0).detach().cpu())
+          #  ax[2, 3].imshow(pred_softmax[:, 2, :, :].squeeze(0).detach().cpu())
+          ##  ax[2, 4].imshow(pred_softmax[:, 3, :, :].squeeze(0).detach().cpu())
+          # ax[2, 0].set_title("pred_softmax [400,640,4]")
+         #   ax[2, 1].set_title("ch0")
+         #   ax[2, 2].set_title("ch1")
+         #   ax[2, 3].set_title("ch2")
+         #   ax[2, 4].set_title("ch3")
 
             # ##PREDICTIONS
-            ax[3, 0].imshow(pred_argmax_softmax.squeeze(0).cpu())
-            ax[3, 1].imshow(pred_argmax_softmax.squeeze(0).cpu() > 0)
-            ax[3, 2].imshow(pred_argmax_softmax.squeeze(0).cpu() > 1)
-            ax[3, 3].imshow(pred_argmax_softmax.squeeze(0).cpu() > 2)
-            ax[3, 4].imshow(pred_argmax_softmax.squeeze(0).cpu() > 3)
-            ax[3, 0].set_title("argmax(softmax(model(image))) [400, 640]")
-            ax[3, 1].set_title("p_a_s>0")
-            ax[3, 2].set_title("p_a_s>1")
-            ax[3, 3].set_title("p_a_s>2")
-            ax[3, 4].set_title("p_a_s>3")
+            ax[2].imshow(pred_argmax_softmax.squeeze(0).cpu())
+         #  ax[3, 1].imshow(pred_argmax_softmax.squeeze(0).cpu() > 0)
+         #   ax[3, 2].imshow(pred_argmax_softmax.squeeze(0).cpu() > 1)
+         #   ax[3, 3].imshow(pred_argmax_softmax.squeeze(0).cpu() > 2)
+         #   ax[3, 4].imshow(pred_argmax_softmax.squeeze(0).cpu() > 3)
+            ax[2].set_title("MODEL PREDICTION[400, 640]")
+        #    ax[3, 1].set_title("p_a_s>0")
+         #   ax[3, 2].set_title("p_a_s>1")
+         #   ax[3, 3].set_title("p_a_s>2")
+         #   ax[3, 4].set_title("p_a_s>3")
 
             # PREDICTIONS argmax()
-            ax[4, 0].imshow(outputs_argmax.cpu())
-            ax[4, 1].imshow(outputs_argmax.cpu() > 0)
-            ax[4, 2].imshow(outputs_argmax.cpu() > 1)
-            ax[4, 3].imshow(outputs_argmax.cpu() > 2)
-            ax[4, 4].imshow(outputs_argmax.cpu() > 3)
-            ax[4, 0].set_title("argmax(outputs[0]) [400, 640]")
-            ax[4, 1].set_title("outputs_argmax>0")
-            ax[4, 2].set_title("outputs_argmax>1")
-            ax[4, 3].set_title("outputs_argmax>2")
-            ax[4, 4].set_title("outputs_argmax>3")
+        #    ax[4, 0].imshow(outputs_argmax.cpu())
+        #   ax[4, 1].imshow(outputs_argmax.cpu() > 0)
+        #    ax[4, 2].imshow(outputs_argmax.cpu() > 1)
+        #   ax[4, 3].imshow(outputs_argmax.cpu() > 2)
+        #    ax[4, 4].imshow(outputs_argmax.cpu() > 3)
+        #    ax[4, 0].set_title("argmax(outputs[0]) [400, 640]")
+         #   ax[4, 1].set_title("outputs_argmax>0")
+       #     ax[4, 2].set_title("outputs_argmax>1")
+          #  ax[4, 3].set_title("outputs_argmax>2")
+         #   ax[4, 4].set_title("outputs_argmax>3")
 
-            if cuda_available:
+            #if cuda_available:
                 ##ONNX PREDICTIONS
-                ax[5, 0].imshow(ort_outs_argmax.cpu())
-                ax[5, 1].imshow(ort_outs_argmax.cpu() > 0)
-                ax[5, 2].imshow(ort_outs_argmax.cpu() > 1)
-                ax[5, 3].imshow(ort_outs_argmax.cpu() > 2)
-                ax[5, 4].imshow(ort_outs_argmax.cpu() > 3)
-                ax[5, 0].set_title("ort_outs_argmax")
-                ax[5, 1].set_title("ort_outs_argmax>0")
-                ax[5, 2].set_title("ort_outs_argmax>1")
-                ax[5, 3].set_title("ort_outs_argmax>2")
-                ax[5, 4].set_title("ort_outs_argmax>3")
+           #     ax[5, 0].imshow(ort_outs_argmax.cpu())
+           #     ax[5, 1].imshow(ort_outs_argmax.cpu() > 0)
+           #     ax[5, 2].imshow(ort_outs_argmax.cpu() > 1)
+            #    ax[5, 3].imshow(ort_outs_argmax.cpu() > 2)
+            #    ax[5, 4].imshow(ort_outs_argmax.cpu() > 3)
+            #    ax[5, 0].set_title("ort_outs_argmax")
+             #   ax[5, 1].set_title("ort_outs_argmax>0")
+             #   ax[5, 2].set_title("ort_outs_argmax>1")
+              #  ax[5, 3].set_title("ort_outs_argmax>2")
+             #   ax[5, 4].set_title("ort_outs_argmax>3")
 
                 # #Clipping input data to the valid range for
                 # imshow with RGB data ([0..1] for floats or [0..255] for integers).
                 # Got range [-27.269308..12.142393].
-                ax[6, 0].imshow(ort_outs.permute(1, 2, 0).cpu())
-                ax[6, 1].imshow(ort_outs.permute(1, 2, 0)[:, :, 0].cpu())
-                ax[6, 2].imshow(ort_outs.permute(1, 2, 0)[:, :, 1].cpu())
-                ax[6, 3].imshow(ort_outs.permute(1, 2, 0)[:, :, 2].cpu())
-                ax[6, 4].imshow(ort_outs.permute(1, 2, 0)[:, :, 3].cpu())
-                ax[6, 0].set_title("onnx [400,640,4]")
-                ax[6, 1].set_title("ort_outs[:,:,0]")
-                ax[6, 2].set_title("ort_outs[:,:,1]")
-                ax[6, 3].set_title("ort_outs[:,:,2]")
-                ax[6, 4].set_title("ort_outs[:,:,3]")
+           #     ax[6, 0].imshow(ort_outs.permute(1, 2, 0).cpu())
+            #    ax[6, 1].imshow(ort_outs.permute(1, 2, 0)[:, :, 0].cpu())
+           #     ax[6, 2].imshow(ort_outs.permute(1, 2, 0)[:, :, 1].cpu())
+            #    ax[6, 3].imshow(ort_outs.permute(1, 2, 0)[:, :, 2].cpu())
+            #    ax[6, 4].imshow(ort_outs.permute(1, 2, 0)[:, :, 3].cpu())
+            #   ax[6, 0].set_title("onnx [400,640,4]")
+          #     ax[6, 1].set_title("ort_outs[:,:,0]")
+            #    ax[6, 2].set_title("ort_outs[:,:,1]")
+            #    ax[6, 3].set_title("ort_outs[:,:,2]")
+           #     ax[6, 4].set_title("ort_outs[:,:,3]")
             if j <= 5:
                 plt.savefig(f"{data_path}/result_{j}.png")
                 plt.close()
