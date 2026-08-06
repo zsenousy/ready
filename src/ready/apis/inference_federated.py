@@ -186,7 +186,7 @@ def main(args):
 
 
 
-    logger.info(f"\n========== FEDERATED INFERENCE RESULTS ==========")
+    logger.info(f"\n########### FEDERATED INFERENCE RESULTS ##########")
     logger.info(f"{'Dataset':<12} {'mIoU':<10} {'Dice':<10} {'Hausdorff':<10} {'Accuracy':<10}")
     logger.info(f"{'Mobious':<12} {sum(mobious_miou)/len(mobious_miou):<10.4f} {sum(mobious_dice)/len(mobious_dice):<10.4f} {sum(mobious_hausdorff)/len(mobious_hausdorff):<10.4f} {sum(mobious_accuracy)/len(mobious_accuracy):<10.4f}")
     logger.info(f"{'openEDS':<12} {sum(openEDS_miou)/len(openEDS_miou):<10.4f} {sum(openEDS_dice)/len(openEDS_dice):<10.4f} {sum(openEDS_hausdorff)/len(openEDS_hausdorff):<10.4f} {sum(openEDS_accuracy)/len(openEDS_accuracy):<10.4f}")
@@ -194,7 +194,7 @@ def main(args):
 
 if __name__ == "__main__":
 
-    parser = ArgumentParser(description="Plot inference for models pth and ONNX")
+    parser = ArgumentParser(description="Plot inference for models pth")
     parser.add_argument("-c", "--config_file", help="Config filename with path", type=str)
     args = parser.parse_args()
     main(args)
