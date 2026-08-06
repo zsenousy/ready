@@ -109,7 +109,7 @@ def main(args):
                 ax[1].set_title("Mobious - Mask")
                 ax[2].imshow(pred.squeeze(0).cpu())
                 ax[2].set_title("Model Prediction")
-                plt.savefig(f"{FULL_INFERENCE_RESULTS}/mobious/mobious_result.png")
+                plt.savefig(f"{FULL_INFERENCE_RESULTS}/inference_results/mobious/mobious_result.png")
                 plt.close()
 
             metrics = evaluate(output, labels)
@@ -142,7 +142,7 @@ def main(args):
                 ax[1].set_title("OpenEDS - Mask")
                 ax[2].imshow(pred.squeeze(0).cpu())
                 ax[2].set_title("Model Prediction")
-                plt.savefig(f"{FULL_INFERENCE_RESULTS}/openEDS/openEDS_result.png")
+                plt.savefig(f"{FULL_INFERENCE_RESULTS}/inference_results/openEDS/openEDS_result.png")
                 plt.close()
 
             metrics = evaluate(output, labels)
@@ -175,7 +175,7 @@ def main(args):
                 ax[1].set_title("RTI-Eyes - Mask")
                 ax[2].imshow(pred.squeeze(0).cpu())
                 ax[2].set_title("Model Prediction")
-                plt.savefig(f"{FULL_INFERENCE_RESULTS}/rti_eyes/rti_result.png")
+                plt.savefig(f"{FULL_INFERENCE_RESULTS}/inference_results/rti_eyes/rti_result.png")
                 plt.close()
 
             metrics = evaluate(output, labels)
