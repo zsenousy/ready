@@ -64,7 +64,7 @@ def main(args):
     if weighted_files:
         latest_modification = max(weighted_files, key = lambda f: f.stat().st_mtime)
         print(f"Loading: {latest_modification}")
-        model.load_state_dict(torch.load(latest_modification))
+        model.load_state_dict(torch.load(latest_modification), map_location=device)
         model.eval()
     else:
         logger.info("No weights found") #debugging
@@ -77,12 +77,11 @@ def main(args):
       #  )
 
         # UserWarning: Specified provider 'CUDAExecutionProvider' is not in available
-        def to_numpy(tensor):
-            return (
-                tensor.detach().cpu().numpy()
-                if tensor.requires_grad
-                else tensor.cpu().numpy()
-            )
+        #def to_numpy(tensor):
+            #return (
+               # tensor.detach().cpu().numpy()
+               # if tensor.requires_grad
+              #  else tensor.cpu().numpy() )
 
     mobious_dataset = MobiousDataset(FULL_MOBIOUS_DATA_PATH)
     mobious_loader = torch.utils.data.DataLoader(mobious_dataset, batch_size=1, shuffle=True, num_workers=0)
