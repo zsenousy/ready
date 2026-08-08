@@ -35,4 +35,4 @@ model_hyperparameters:
      #set to 0 to save enough RAM for training on CPU
     num_workers: 0
     epochs: 5
-    learning_rate: 0.003
+    learning_rate: 0.0003
