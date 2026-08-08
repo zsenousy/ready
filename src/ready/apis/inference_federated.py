@@ -90,40 +90,43 @@ def main(args):
 
     target_transform = transforms.Compose([
     transforms.Resize((128, 128), antialias=True)
-])
-    mobious_dataset = MobiousDataset(FULL_MOBIOUS_DATA_PATH, transform=transform, target_transform=target_transform)
-    mobious_loader = torch.utils.data.DataLoader(mobious_dataset, batch_size=1, shuffle=True, num_workers=0)
-
-    mobious_miou, mobious_dice, mobious_hausdorff, mobious_accuracy = [], [], [], []
-
+    ])
+    
+    rti_dataset = Rti_Eyes_Dataset(FULL_RTI_DATA_PATH, transform=transform, target_transform=target_transform)
+    rti_loader = torch.utils.data.DataLoader(rti_dataset, batch_size=1, shuffle=True, num_workers=0)
+    
+    rti_miou, rti_dice, rti_hausdorff, rti_accuracy = [], [], [], []
+    
     with torch.no_grad():
-        for j, data in enumerate(mobious_loader, 1):
+        for j, data in enumerate(rti_loader, 1):
             images, labels = data
             if cuda_available:
                 images, labels = images.cuda(), labels.cuda()
             image = images[0].unsqueeze(0)
             label = labels[0].unsqueeze(0)
-
+    
             output = model(image)
             pred = torch.argmax(F.softmax(output, dim=1), dim=1)
-
-            #save at least first 5 images for each dataset
-            if j <= 25:      
+    
+            if j <= 25:
                 fig, ax = plt.subplots(1, 3, figsize=(12, 4))
                 ax[0].imshow(image.squeeze(0).permute(1, 2, 0).cpu() / 255)
-                ax[0].set_title("Mobious - Original Image")
+                ax[0].set_title("RTI-Eyes - Original Image")
                 ax[1].imshow(label.squeeze(0).cpu())
-                ax[1].set_title("Mobious - Mask")
+                ax[1].set_title("RTI-Eyes - Mask")
                 ax[2].imshow(pred.squeeze(0).cpu())
                 ax[2].set_title("Model Prediction")
-                plt.savefig(f"{FULL_INFERENCE_RESULTS}/inference_results/mobious/mobious_result{j}.png")
+                plt.savefig(f"{FULL_INFERENCE_RESULTS}/inference_results/rti_eyes/rti_result{j}.png")
                 plt.close()
-
+            logger.info(f" rit done")
+            print(f"rit done")
+    
             metrics = evaluate(output, labels)
-            mobious_miou.append(metrics['miou'])
-            mobious_dice.append(metrics['dice'])
-            mobious_hausdorff.append(metrics['hausdorff_distance'])
-            mobious_accuracy.append(metrics['accuracy'])
+            rti_miou.append(metrics['miou'])
+            rti_dice.append(metrics['dice'])
+            rti_hausdorff.append(metrics['hausdorff_distance'])
+            rti_accuracy.append(metrics['accuracy'])
+    
 
     openEDS_dataset = EyeDataset(FULL_OPENEDS_DATA_PATH, transform=transform, target_transform=target_transform)
     openEDS_loader = torch.utils.data.DataLoader(openEDS_dataset, batch_size=1, shuffle=True, num_workers=0)
@@ -132,6 +135,8 @@ def main(args):
 
     with torch.no_grad():
         for j, data in enumerate(openEDS_loader, 1):
+            print(f"openEDS batch {j}")
+            logger.info(f"openEDS batch {j}")
             images, labels = data
             if cuda_available:
                 images, labels = images.cuda(), labels.cuda()
@@ -151,6 +156,8 @@ def main(args):
                 ax[2].set_title("Model Prediction")
                 plt.savefig(f"{FULL_INFERENCE_RESULTS}/inference_results/openEDS/openEDS_result{j}.png")
                 plt.close()
+            logger.info(f" openeds done")
+            print(f"openeds done")
 
             metrics = evaluate(output, labels)
             openEDS_miou.append(metrics['miou'])
@@ -158,38 +165,41 @@ def main(args):
             openEDS_hausdorff.append(metrics['hausdorff_distance'])
             openEDS_accuracy.append(metrics['accuracy'])
 
-    rti_dataset = Rti_Eyes_Dataset(FULL_RTI_DATA_PATH, transform=transform, target_transform=target_transform)
-    rti_loader = torch.utils.data.DataLoader(rti_dataset, batch_size=1, shuffle=True, num_workers=0)
-
-    rti_miou, rti_dice, rti_hausdorff, rti_accuracy = [], [], [], []
-
+    mobious_dataset = MobiousDataset(FULL_MOBIOUS_DATA_PATH, transform=transform, target_transform=target_transform)
+    mobious_loader = torch.utils.data.DataLoader(mobious_dataset, batch_size=1, shuffle=True, num_workers=0)
+    
+    mobious_miou, mobious_dice, mobious_hausdorff, mobious_accuracy = [], [], [], []
+    
     with torch.no_grad():
-        for j, data in enumerate(rti_loader, 1):
+        for j, data in enumerate(mobious_loader, 1):
             images, labels = data
             if cuda_available:
                 images, labels = images.cuda(), labels.cuda()
             image = images[0].unsqueeze(0)
             label = labels[0].unsqueeze(0)
-
+    
             output = model(image)
             pred = torch.argmax(F.softmax(output, dim=1), dim=1)
-
-            if j <= 25:
+    
+            #save at least first 5 images for each dataset
+            if j <= 25:      
                 fig, ax = plt.subplots(1, 3, figsize=(12, 4))
                 ax[0].imshow(image.squeeze(0).permute(1, 2, 0).cpu() / 255)
-                ax[0].set_title("RTI-Eyes - Original Image")
+                ax[0].set_title("Mobious - Original Image")
                 ax[1].imshow(label.squeeze(0).cpu())
-                ax[1].set_title("RTI-Eyes - Mask")
+                ax[1].set_title("Mobious - Mask")
                 ax[2].imshow(pred.squeeze(0).cpu())
                 ax[2].set_title("Model Prediction")
-                plt.savefig(f"{FULL_INFERENCE_RESULTS}/inference_results/rti_eyes/rti_result{j}.png")
+                plt.savefig(f"{FULL_INFERENCE_RESULTS}/inference_results/mobious/mobious_result{j}.png")
                 plt.close()
-
+            logger.info(f" mobious done")
+            print(f"mobious done")
+    
             metrics = evaluate(output, labels)
-            rti_miou.append(metrics['miou'])
-            rti_dice.append(metrics['dice'])
-            rti_hausdorff.append(metrics['hausdorff_distance'])
-            rti_accuracy.append(metrics['accuracy'])
+            mobious_miou.append(metrics['miou'])
+            mobious_dice.append(metrics['dice'])
+            mobious_hausdorff.append(metrics['hausdorff_distance'])
+            mobious_accuracy.append(metrics['accuracy'])
 
 
 
