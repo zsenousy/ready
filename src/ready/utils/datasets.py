@@ -244,7 +244,9 @@ class Rti_Eyes_Dataset(Dataset):
         random.seed(seed) # apply this seed to target transform
         torch.manual_seed(seed) 
         if self.target_transform:
+            encode_mask = encode_mask.unsqueeze(0)
             encode_mask = self.target_transform(encode_mask)
+            encode_mask = encode_mask.squeeze(0)
 
         encode_mask=encode_mask.squeeze(0) # from torch.Size([1, H, W]) to torch.Size([H, W])
 
