@@ -110,7 +110,7 @@ def main(args):
             #save at least first 5 images for each dataset
             if j <= 5:      
                 fig, ax = plt.subplots(1, 3, figsize=(12, 4))
-                ax[0].imshow(image.squeeze(0).permute(1, 2, 0).cpu())
+                ax[0].imshow(image.squeeze(0).permute(1, 2, 0).cpu() / 255)
                 ax[0].set_title("Mobious - Original Image")
                 ax[1].imshow(label.squeeze(0).cpu())
                 ax[1].set_title("Mobious - Mask")
@@ -143,7 +143,7 @@ def main(args):
 
             if j <=  5:
                 fig, ax = plt.subplots(1, 3, figsize=(12, 4))
-                ax[0].imshow(image.squeeze(0).permute(1, 2, 0).cpu())
+                ax[0].imshow(image.squeeze(0).permute(1, 2, 0).cpu() / 255)
                 ax[0].set_title("openEDS - Original Image")
                 ax[1].imshow(label.squeeze(0).cpu())
                 ax[1].set_title("OpenEDS - Mask")
@@ -176,7 +176,7 @@ def main(args):
 
             if j <= 5:
                 fig, ax = plt.subplots(1, 3, figsize=(12, 4))
-                ax[0].imshow(image.squeeze(0).permute(1, 2, 0).cpu())
+                ax[0].imshow(image.squeeze(0).permute(1, 2, 0).cpu() / 255)
                 ax[0].set_title("RTI-Eyes - Original Image")
                 ax[1].imshow(label.squeeze(0).cpu())
                 ax[1].set_title("RTI-Eyes - Mask")
