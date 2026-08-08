@@ -1,6 +1,7 @@
 import os
 from argparse import ArgumentParser
 from pathlib import Path
+from xml.parsers.expat import model
 
 import matplotlib.image as mimg
 import matplotlib.pyplot as plt
@@ -67,6 +68,12 @@ def main(args):
         print(f"Loading: {latest_modification}")
         model.load_state_dict(torch.load(latest_modification, map_location=device))
         model.eval()
+        # Normalise weights to reasonable range
+        with torch.no_grad():
+            for name, param in model.named_parameters():
+                max_val = param.data.abs().max()
+                if max_val > 100:  # only normalise if weights are too large
+                    param.data = param.data / max_val * 10
     else:
         logger.info("No weights found") #debugging
 
@@ -106,7 +113,9 @@ def main(args):
             label = labels[0].unsqueeze(0)
     
             output = model(image)
-            pred = torch.argmax(F.softmax(output, dim=1), dim=1)
+
+            temperature = 0.05
+            pred = torch.argmax(F.softmax(output / temperature, dim=1), dim=1)
     
             if j <= 25:
                 fig, ax = plt.subplots(1, 3, figsize=(12, 4))
@@ -146,7 +155,8 @@ def main(args):
             label = labels[0].unsqueeze(0)
 
             output = model(image)
-            pred = torch.argmax(F.softmax(output, dim=1), dim=1)
+            temperature = 0.05
+            pred = torch.argmax(F.softmax(output / temperature, dim=1), dim=1)
 
             if j <=  25:
                 fig, ax = plt.subplots(1, 3, figsize=(12, 4))
@@ -181,7 +191,8 @@ def main(args):
             label = labels[0].unsqueeze(0)
     
             output = model(image)
-            pred = torch.argmax(F.softmax(output, dim=1), dim=1)
+            temperature = 0.05
+            pred = torch.argmax(F.softmax(output / temperature, dim=1), dim=1)
     
             #save at least first 5 images for each dataset
             if j <= 25:      
