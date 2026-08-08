@@ -33,7 +33,7 @@ def fedAvg(dataset_weights, dataset_sizes):
 
     for key in dataset_weights[0].keys():
         # Weighted sum across all clients
-        average_weights[key] = sum(dataset_weights[i][key] * dataset_sizes[i]
+        average_weights[key] = sum(dataset_weights[i][key].float() * dataset_sizes[i]
             for i in range(len(dataset_weights))) / total_sizes
     
     return average_weights
