@@ -91,7 +91,7 @@ def main(args):
     target_transform = transforms.Compose([
     transforms.Resize((128, 128), antialias=True)
     ])
-    
+
     rti_dataset = Rti_Eyes_Dataset(FULL_RTI_DATA_PATH, transform=transform, target_transform=target_transform)
     rti_loader = torch.utils.data.DataLoader(rti_dataset, batch_size=1, shuffle=True, num_workers=0)
     
@@ -110,7 +110,9 @@ def main(args):
     
             if j <= 25:
                 fig, ax = plt.subplots(1, 3, figsize=(12, 4))
-                ax[0].imshow(image.squeeze(0).permute(1, 2, 0).cpu() / 255)
+                img_display = image.squeeze(0).permute(1, 2, 0).cpu()
+                img_display = (img_display - img_display.min()) / (img_display.max() - img_display.min() + 1e-8)
+                ax[0].imshow(img_display)
                 ax[0].set_title("RTI-Eyes - Original Image")
                 ax[1].imshow(label.squeeze(0).cpu())
                 ax[1].set_title("RTI-Eyes - Mask")
