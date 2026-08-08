@@ -108,7 +108,7 @@ def main(args):
             pred = torch.argmax(F.softmax(output, dim=1), dim=1)
 
             #save at least first 5 images for each dataset
-            if j <= 5:      
+            if j <= 25:      
                 fig, ax = plt.subplots(1, 3, figsize=(12, 4))
                 ax[0].imshow(image.squeeze(0).permute(1, 2, 0).cpu() / 255)
                 ax[0].set_title("Mobious - Original Image")
@@ -141,7 +141,7 @@ def main(args):
             output = model(image)
             pred = torch.argmax(F.softmax(output, dim=1), dim=1)
 
-            if j <=  5:
+            if j <=  25:
                 fig, ax = plt.subplots(1, 3, figsize=(12, 4))
                 ax[0].imshow(image.squeeze(0).permute(1, 2, 0).cpu() / 255)
                 ax[0].set_title("openEDS - Original Image")
@@ -174,7 +174,7 @@ def main(args):
             output = model(image)
             pred = torch.argmax(F.softmax(output, dim=1), dim=1)
 
-            if j <= 5:
+            if j <= 25:
                 fig, ax = plt.subplots(1, 3, figsize=(12, 4))
                 ax[0].imshow(image.squeeze(0).permute(1, 2, 0).cpu() / 255)
                 ax[0].set_title("RTI-Eyes - Original Image")
