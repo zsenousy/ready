@@ -171,6 +171,7 @@ def training_loop(model, current_idx, current_data, optimizer, training_performa
 
     loss = loss_fn(output, labels)
     loss.backward()
+    torch.nn.utils.clip_grad_norm_(model.parameters(), max_norm=1.0) #gradient clipping to avoid exploding gradients
     optimizer.step()
 
     batch_metrics = evaluate(output, labels)

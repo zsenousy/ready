@@ -107,7 +107,7 @@ if __name__ == "__main__":
     #weights_path = "downloads/ready/datasets/ready/federated"
     weights = pathlib.Path(weights_path)
     
-    federated(5, weights)
+    federated(2, weights)
     logger.info(f"##################   DONE   #############")
 
     logger.info(f"############ INFERENCE FEDERATED ############")
