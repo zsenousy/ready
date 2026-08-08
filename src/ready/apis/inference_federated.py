@@ -87,7 +87,11 @@ def main(args):
     transform = transforms.Compose([
         transforms.Resize((128, 128), antialias=True)
     ])
-    mobious_dataset = MobiousDataset(FULL_MOBIOUS_DATA_PATH, transform=transform)
+
+    target_transform = transforms.Compose([
+    transforms.Resize((128, 128))
+])
+    mobious_dataset = MobiousDataset(FULL_MOBIOUS_DATA_PATH, transform=transform, target_transform=target_transform)
     mobious_loader = torch.utils.data.DataLoader(mobious_dataset, batch_size=1, shuffle=True, num_workers=0)
 
     mobious_miou, mobious_dice, mobious_hausdorff, mobious_accuracy = [], [], [], []
@@ -121,7 +125,7 @@ def main(args):
             mobious_hausdorff.append(metrics['hausdorff_distance'])
             mobious_accuracy.append(metrics['accuracy'])
 
-    openEDS_dataset = EyeDataset(FULL_OPENEDS_DATA_PATH, transform=transform)
+    openEDS_dataset = EyeDataset(FULL_OPENEDS_DATA_PATH, transform=transform, target_transform=target_transform)
     openEDS_loader = torch.utils.data.DataLoader(openEDS_dataset, batch_size=1, shuffle=True, num_workers=0)
 
     openEDS_miou, openEDS_dice, openEDS_hausdorff, openEDS_accuracy = [], [], [], []
@@ -154,7 +158,7 @@ def main(args):
             openEDS_hausdorff.append(metrics['hausdorff_distance'])
             openEDS_accuracy.append(metrics['accuracy'])
 
-    rti_dataset = Rti_Eyes_Dataset(FULL_RTI_DATA_PATH, transform=transform)
+    rti_dataset = Rti_Eyes_Dataset(FULL_RTI_DATA_PATH, transform=transform, target_transform=target_transform)
     rti_loader = torch.utils.data.DataLoader(rti_dataset, batch_size=1, shuffle=True, num_workers=0)
 
     rti_miou, rti_dice, rti_hausdorff, rti_accuracy = [], [], [], []
