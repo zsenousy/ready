@@ -89,7 +89,7 @@ def main(args):
     ])
 
     target_transform = transforms.Compose([
-    transforms.Resize((128, 128))
+    transforms.Resize((128, 128), antialias=True)
 ])
     mobious_dataset = MobiousDataset(FULL_MOBIOUS_DATA_PATH, transform=transform, target_transform=target_transform)
     mobious_loader = torch.utils.data.DataLoader(mobious_dataset, batch_size=1, shuffle=True, num_workers=0)
