@@ -243,7 +243,7 @@ def main(args):
                 total_training_running_loss += current_training_loss
                 total_num_training_samples += num_samples_processed
 
-                if j == 700: 
+                if j == 200: 
                     break
 
             logger.info(f"#########################")
