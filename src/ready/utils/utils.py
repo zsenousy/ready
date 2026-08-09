@@ -224,7 +224,7 @@ def validation_loop(model, current_idx, current_data, optimizer, validation_perf
 
     loss = loss_fn(output, labels)
 
-    batch_metrics = evaluate(output, labels)
+    batch_metrics = evaluate(output, labels, skip_hausdorff=True) #skip hausdorff distance calculation during validation to save time
 
     for key, value in batch_metrics.items():
         # print(f"{key}: {value:.4f}")
