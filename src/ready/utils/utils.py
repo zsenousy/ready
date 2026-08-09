@@ -174,7 +174,7 @@ def training_loop(model, current_idx, current_data, optimizer, training_performa
     torch.nn.utils.clip_grad_norm_(model.parameters(), max_norm=1.0) #gradient clipping to avoid exploding gradients
     optimizer.step()
 
-    batch_metrics = evaluate(output, labels)
+    batch_metrics = evaluate(output, labels, skip_hausdorff=True) #skip hausdorff distance calculation during training to save time
 
     for key, value in batch_metrics.items():
         # print(f"{key}: {value:.4f}")
