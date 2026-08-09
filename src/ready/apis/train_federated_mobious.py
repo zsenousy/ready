@@ -110,8 +110,8 @@ def main(args):
                                             transforms.RandomVerticalFlip(p=0.5),
                                             transforms.RandomRotation(45),
                                             #transforms.GaussianBlur(kernel_size=(5, 13), sigma=(1, 50)),
-                                            #transforms.Normalize(mean=[0.285, 0.456, 0.406], std=[0.529, 0.524, 0.525]),
-                                            transforms.ElasticTransform(alpha=100.0, sigma=5.0),
+                                            transforms.Normalize(mean=[0.285, 0.456, 0.406], std=[0.529, 0.524, 0.525]),
+                                            #transforms.ElasticTransform(alpha=100.0, sigma=5.0),
                                             transforms.Resize((128, 128), antialias=True),      #set to 128x128 to test data resizing on model, same with mask, antialias True to prevent warning messages during training
                                             ])
      #Transforms for masks
