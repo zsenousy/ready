@@ -104,9 +104,9 @@ def main(args):
                                             transforms.RandomHorizontalFlip(p=0.5),
                                             transforms.RandomVerticalFlip(p=0.5),
                                             transforms.RandomRotation(45),
-                                            #transforms.GaussianBlur(kernel_size=(5, 13), sigma=(1, 50)),
+                                            transforms.GaussianBlur(kernel_size=(5, 13), sigma=(1, 50)),
                                             transforms.Normalize(mean=[0.285, 0.456, 0.406], std=[0.529, 0.524, 0.525]),
-                                            #transforms.ElasticTransform(alpha=100.0, sigma=5.0),
+                                            transforms.ElasticTransform(alpha=100.0, sigma=5.0),
                                             transforms.Resize((128, 128), antialias=True)
                                             ])
 
@@ -230,8 +230,6 @@ def main(args):
                 total_training_running_loss += current_training_loss
                 total_num_training_samples += num_samples_processed
 
-                if j == 500:  
-                    break
 
             logger.info(f"#########################")
 

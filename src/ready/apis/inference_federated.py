@@ -121,8 +121,7 @@ def main(args):
         
             if j <=  25:
                 fig, ax = plt.subplots(1, 3, figsize=(12, 4))
-                img_display = image.squeeze(0).permute(1, 2, 0).cpu()
-                img_display = (img_display - img_display.min()) / (img_display.max() - img_display.min() + 1e-8)
+                ax[0].imshow(image.squeeze(0).permute(1, 2, 0).cpu())
                 ax[0].set_title("openEDS - Original Image")
                 ax[1].imshow(label.squeeze(0).cpu())
                 ax[1].set_title("OpenEDS - Mask")

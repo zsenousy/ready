@@ -177,8 +177,6 @@ if __name__ == "__main__":
             if j % 100 == 0 or j == 1:  # if j % 2 == 0 or j == 1:
                 print(f"Loss at {j} mini-batch {loss.item()/trainloader.batch_size}")
 
-            if j == 200:
-                break
         print(f"Average loss @ epoch: {sum_loss / (j*trainloader.batch_size)}")
 
     print("Training complete. Saving checkpoint...")
