@@ -17,11 +17,11 @@ pretrained_model:
     model_name_for_eval: "weights_24-Jul-2025_16-55-48.pth"
 
 model_hyperparameters:
-    batch_size: 8
+    batch_size: 32
     num_workers: 0
-    epochs: 5
+    epochs: 10
     #epochs: 100
-    learning_rate: 0.0003
+    learning_rate: 0.003
 
 ## TODO:
 #Add performace metrics, training splitting ratios to openEDS

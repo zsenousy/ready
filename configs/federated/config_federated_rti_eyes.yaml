@@ -31,8 +31,8 @@ pretrained_model:
     model_name_for_eval : "weights_24-Jul-2025_16-55-48.pth" # weights_[date]_[time].pth .Please remember to add your own model.
 
 model_hyperparameters:
-    batch_size: 8
+    batch_size: 32
      #set to 0 to save enough RAM for training on CPU
     num_workers: 0
-    epochs: 5
-    learning_rate: 0.0003
+    epochs: 10
+    learning_rate: 0.003
