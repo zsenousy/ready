@@ -151,7 +151,7 @@ def main(args):
     if weighted_files:
         latest_modification = max(weighted_files, key=lambda f: f.stat().st_mtime)
         print(f"loading: {latest_modification}")
-        model.load_state_dict(torch.load(latest_modification))
+        model.load_state_dict(torch.load(latest_modification, map_location=device))
     else:
         logger.info("cannot find .pth files")
 
