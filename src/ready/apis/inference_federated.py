@@ -73,7 +73,7 @@ def main(args):
             for name, param in model.named_parameters():
                 max_val = param.data.abs().max()
                 if max_val > 100:  # only normalise if weights are too large
-                    param.data = param.data / max_val * 10
+                    param.data = param.data / max_val * 1
     else:
         logger.info("No weights found") #debugging
 
