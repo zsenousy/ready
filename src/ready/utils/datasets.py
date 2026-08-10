@@ -64,7 +64,9 @@ class EyeDataset(Dataset):
         if self.transform:
             image = self.transform(image)
         if self.target_transform:
+            label = label.unsqueeze(0)  # Add a channel dimension for the target transform
             label = self.target_transform(label)
+            label = label.squeeze(0)  # Remove the channel dimension after transformation
         
         label=label.squeeze(0) # from torch.Size([1, 400, 640]) to #torch.Size([400, 640])
 
