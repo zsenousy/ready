@@ -1,5 +1,5 @@
-model:
-    input_model_name: "30-Jul-2025_22-34-06_NVIDIA_A100_80GB_PCI/weights_30-Jul-2025_22-34-06.pth"
+#model:
+   # input_model_name: "30-Jul-2025_22-34-06_NVIDIA_A100_80GB_PCI/weights_30-Jul-2025_22-34-06.pth"
 
 dataset:
     models_path: "Scratch/scratch/ccaekqu/datasets/ready/ready/mobious/models"

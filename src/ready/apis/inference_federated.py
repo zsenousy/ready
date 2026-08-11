@@ -49,9 +49,9 @@ def main(args):
 
 
 
-    input_model_name=config.model.input_model_name
-    model_name = input_model_name[:-4]
-    logger.info(f"model_name {model_name}")
+    #input_model_name=config.model.input_model_name
+    #model_name = input_model_name[:-4]
+    #logger.info(f"model_name {model_name}")
 
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     cuda_available = torch.cuda.is_available()
