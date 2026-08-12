@@ -55,7 +55,7 @@ if __name__ == "__main__":
     logger.info(f"trainloader.batch_size {trainloader.batch_size}")
 
     weighted_files = list(Path(FULL_MODEL_PATH).rglob("*.pth"))
-    model = UNet(nch_in=3, nch_out=4, nch_ker=64)
+    model = UNet(nch_in=3, nch_out=4, nch_ker=16)
     model = model.to(device)
     if weighted_files:
         latest_modification = max(weighted_files, key = lambda f: f.stat().st_mtime)

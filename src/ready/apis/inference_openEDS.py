@@ -61,7 +61,7 @@ if __name__ == "__main__":
     # Saved PyTorch Model State to models/_weights_10-09-24_23-53-45.pth
     # Elapsed time for the training loop: 1.3849741021792095 (mins)
     weighted_files = list(Path(FULL_MODEL_PATH).rglob("*.pth"))
-    model = UNet(nch_in=3, nch_out=4, nch_ker=64)
+    model = UNet(nch_in=3, nch_out=4, nch_ker=16)
     model = model.to(device)
     if weighted_files:
         latest_modification = max(weighted_files, key = lambda f: f.stat().st_mtime)
