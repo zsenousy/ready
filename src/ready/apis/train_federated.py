@@ -40,7 +40,7 @@ def fedAvg(dataset_weights, dataset_sizes):
 
 def federated(Num_of_rounds, weights):
     
-    model = UNet(nch_in=3, nch_out=4, nch_ker=64)
+    model = UNet(nch_in=3, nch_out=4, nch_ker=16)
 
 
     for round in range(Num_of_rounds):

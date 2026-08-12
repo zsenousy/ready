@@ -154,7 +154,7 @@ def main(args):
     
 
     #load most recent pretrained weights
-    model = UNet(nch_in=3, nch_out=4, nch_ker=64)
+    model = UNet(nch_in=3, nch_out=4, nch_ker=16)  # Reduced number of kernels to 16
     weighted_files = list(Path(FULL_PRETRAINED_MODEL_PATH).rglob("*.pth"))
     if weighted_files:
         latest_modification = max(weighted_files, key = lambda f: f.stat().st_mtime)
