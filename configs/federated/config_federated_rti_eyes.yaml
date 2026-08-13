@@ -6,8 +6,8 @@ dataset:
     use_github_data_path_flag : False # data_path = FULL_GITHUB_DATA_PATH if use_github_data_path_flag else FULL_DATA_PATH
     github_data_path: "data/rti-eyes/sample-frames"
     #data_path: "downloads/ready/datasets/s-natural/s-natural/10" 
-    #data_path: "Scratch/scratch/ccaekqu/datasets/s-natural/s-natural/s-natural"
-    data_path: "/rdss/rd02/ritd-ag-project-rd02iw-mxoch87/datasets/s-natural/s-natural"
+    data_path: "Scratch/scratch/ccaekqu/datasets/s-natural/s-natural/s-natural"
+    #data_path: "/rdss/rd02/ritd-ag-project-rd02iw-mxoch87/datasets/s-natural/s-natural"
     models_path: "Scratch/scratch/ccaekqu/datasets/ready/ready/rti_eyes/models"
     #models_path: "downloads/ready/datasets/ready/rti_eyes/models"
     checkpoint_path: "datasets/?" #TODO checkpoint_path
@@ -31,8 +31,8 @@ pretrained_model:
     model_name_for_eval : "weights_24-Jul-2025_16-55-48.pth" # weights_[date]_[time].pth .Please remember to add your own model.
 
 model_hyperparameters:
-    batch_size: 8
+    batch_size: 32
      #set to 0 to save enough RAM for training on CPU
     num_workers: 0
-    epochs: 5
+    epochs: 6
     learning_rate: 0.003
