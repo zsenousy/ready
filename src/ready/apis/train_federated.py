@@ -68,7 +68,7 @@ def federated(Num_of_rounds, weights):
         config_rti = OmegaConf.load("configs/federated/config_federated_rti_eyes.yaml")
 
         mobious_path = os.path.join(Path.home(), config_mobious.dataset.data_path)
-        openeds_path = os.path.join(Path.home() ,config_openEDS.datases.data_path)
+        openeds_path = os.path.join(Path.home() ,config_openEDS.dataset.data_path)
         rti_path = os.path.join(Path.home(), config_rti.dataset.data_path)
 
 
