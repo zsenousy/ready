@@ -86,9 +86,9 @@ def dice(pred_mask, mask, smooth=1e-10, n_classes=1):
 
 def hausdorff1(pred_mask, mask, smooth=1e-10, n_classes=4):
     """
-    Calculate mean Hausdorff Distance across all classes.
+    Calculate mean Hausdorff Distance across all classes (background, sclera, pupil, iris).
     Measures the maximum boundary distance between predicted and ground truth masks.
-    Lower is better. 0 = perfect boundary match.
+    Lower is better. 0 is equal to perfect boundary match.
     
     Args:
         pred_mask: predicted mask (numpy array, values 0 to n_classes-1)
@@ -116,7 +116,7 @@ def hausdorff1(pred_mask, mask, smooth=1e-10, n_classes=4):
     
     return np.nanmean(hausdorff_per_class)
 
-def evaluate(pred_mask, mask, smooth=1e-10, n_classes=1, **kwargs):
+def evaluate(pred_mask, mask, smooth=1e-10, n_classes=1, skip_hausdorff=False, **kwargs):
 
     """
         Evaluate model performance using pixel accuracy, f1, recall, precision, fbeta, mIoU, Dice Coefficient.
@@ -126,6 +126,7 @@ def evaluate(pred_mask, mask, smooth=1e-10, n_classes=1, **kwargs):
             mask: ground truth mask
             smooth: smoothing value, default is 1e-10.
             n_classes: number of classes, default is 1.
+            skip_hausdorff: whether to skip Hausdorff distance calculation.
             average: averaging method for f1, recall, precision, fbeta. Default is 'weighted'.
                     can be any of 'binary', 'micro', 'macro', 'weighted', 'samples'.
 
@@ -190,11 +191,14 @@ def evaluate(pred_mask, mask, smooth=1e-10, n_classes=1, **kwargs):
         pred_np = pred_mask.cpu().numpy()  # shape [batch, height, width]
         mask_np = mask.cpu().numpy()       # shape [batch, height, width]
         # Average Hausdorff across images in the batch
-        hausdorff_scores = []
-        for i in range(pred_np.shape[0]):
-            h = hausdorff1(pred_np[i], mask_np[i], n_classes=n_classes)
-            hausdorff_scores.append(h)
-        hausdorff_score = np.nanmean(hausdorff_scores)
+        if not skip_hausdorff:
+            hausdorff_scores = []
+            for i in range(pred_np.shape[0]):
+                h = hausdorff1(pred_np[i], mask_np[i], n_classes=n_classes)
+                hausdorff_scores.append(h)
+            hausdorff_score = np.nanmean(hausdorff_scores)
+        else:
+            hausdorff_score = 0.0
         pred_mask = pred_mask.contiguous().view(-1)
         pred_mask = pred_mask.cpu().numpy()
         mask = mask.contiguous().view(-1).cpu().numpy()

@@ -64,7 +64,9 @@ class EyeDataset(Dataset):
         if self.transform:
             image = self.transform(image)
         if self.target_transform:
+            label = label.unsqueeze(0)  # Add a channel dimension for the target transform
             label = self.target_transform(label)
+            label = label.squeeze(0)  # Remove the channel dimension after transformation
         
         label=label.squeeze(0) # from torch.Size([1, 400, 640]) to #torch.Size([400, 640])
 
@@ -213,12 +215,16 @@ class Rti_Eyes_Dataset(Dataset):
         masks_path = os.path.join(self.f_dir, "mask-withoutskin-noglasses1", self.masks_path[idx])
 
         #converting image to pytorch so the float type can be attached to it
-        image = torch.tensor(np.array(Image.open(img_path).convert("RGB")), dtype=torch.float) / 255
-        image = image.permute(2, 0, 1)  # convert from [H, W, 3] to [3, H, W]
+        #image = torch.tensor(np.array(Image.open(img_path).convert("RGB")), dtype=torch.float) / 255
+        image = read_image(img_path).type(torch.float) / 255
+        if image.shape[0] == 1: # grayscale -> RGB
+            image = image.repeat(3, 1, 1)
+        image = image[:3, :, :]  
+        #image = image.permute(2, 0, 1)  # convert from [H, W, 3] to [3, H, W]
         try:
             mask = np.array(Image.open(masks_path).convert("RGB"))
         except Exception as e:
-            print(f"Corrupted file skipped: {masks_path} — {e}")
+            print(f"Corrupted file skipped: {masks_path} — {e}") ##skip corrupted .tiff files, usually on Myriad Scratch
             image = torch.zeros(3, 128, 128)
             encode_mask = torch.zeros(128, 128, dtype=torch.long)
             return image, encode_mask
@@ -227,7 +233,7 @@ class Rti_Eyes_Dataset(Dataset):
         encode_mask[np.all(mask == [0,   0,   255], axis=2)] = 1  # sclera
         encode_mask[np.all(mask == [0,   255, 0],   axis=2)] = 2  # iris
         encode_mask[np.all(mask == [255, 0,   0],   axis=2)] = 3  # pupil 
-        # black pixels stay 0, the background
+        # remaining pixels stay 0, the background
 
         encode_mask = torch.tensor(encode_mask, dtype=torch.long)
 
@@ -238,9 +244,11 @@ class Rti_Eyes_Dataset(Dataset):
             image = self.transform(image)
 
         random.seed(seed) # apply this seed to target transform
-        torch.manual_seed(seed) # needed for torchvision 0.7
+        torch.manual_seed(seed) 
         if self.target_transform:
+            encode_mask = encode_mask.unsqueeze(0)
             encode_mask = self.target_transform(encode_mask)
+            encode_mask = encode_mask.squeeze(0)
 
         encode_mask=encode_mask.squeeze(0) # from torch.Size([1, H, W]) to torch.Size([H, W])
 

@@ -279,7 +279,7 @@ def main(args):
     current_time_stamp= datetime.now().strftime("%d-%b-%Y_%H-%M-%S")
     PATH = FULL_MODEL_PATH+"/"+ current_time_stamp + "_" + device_name
 
-    model = UNet(nch_in=3, nch_out=4)
+    model = UNet(nch_in=3, nch_out=4,nch_ker=16)
 
     if not evaluation_with_pretrained_model_flag:
 

@@ -10,6 +10,8 @@ dataset:
     models_path: "Scratch/scratch/ccaekqu/datasets/ready/ready/mobious/models" 
     checkpoint_path: "datasets/?" 
 
+
+    #transforms for images on training federated with mobious
 transforms:
     transform_operation: transforms_img 
     target_transform_operation: transforms_rotations
@@ -27,11 +29,11 @@ pretrained_model:
         # Set to False if you want to use the standard workflow: run training and validation, then perform evaluation.
     models_folder_path : "Scratch/scratch/ccaekqu/datasets/ready/ready/mobious/models" # LOCAL and SERVER paths
     checkpoint_path : "datasets/?"
-    model_name_for_eval : "weights_24-Jul-2025_16-55-48.pth" # weights_[date]_[time].pth .Please remember to add your own model.
+    model_name_for_eval : "weights_24-Jul-2025_16-55-48.pth" # weights_[date]_[time].pth
 
 model_hyperparameters:
-    batch_size: 8
+    batch_size: 32
      #set to 0 to save enough RAM for training on CPU
     num_workers: 0
-    epochs: 5
+    epochs: 6
     learning_rate: 0.003

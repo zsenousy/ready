@@ -3,7 +3,8 @@ from ready.models.unet import UNet
 import pathlib
 import torch
 import torch.nn as nn
-#from ready.apis.train_federated_mobious import main as train_federated_mobious
+from ready.apis.train_federated_mobious import main as train_federated_mobious
+from ready.apis.inference_federated import main as inference_federated
 import os
 import subprocess
 from ready.apis.train_federated_rti_eyes import main as train_federated_rti_eyes
@@ -31,14 +32,14 @@ def fedAvg(dataset_weights, dataset_sizes):
 
     for key in dataset_weights[0].keys():
         # Weighted sum across all clients
-        average_weights[key] = sum(dataset_weights[i][key] * dataset_sizes[i]
+        average_weights[key] = sum(dataset_weights[i][key].float() * dataset_sizes[i]
             for i in range(len(dataset_weights))) / total_sizes
     
     return average_weights
 
 def federated(Num_of_rounds, weights):
     
-    model = UNet(nch_in=3, nch_out=4, nch_ker=64)
+    model = UNet(nch_in=3, nch_out=4, nch_ker=16)
 
 
     for round in range(Num_of_rounds):
@@ -53,6 +54,11 @@ def federated(Num_of_rounds, weights):
         args_mobious = Namespace(config_file="configs/federated/config_federated_mobious.yaml")
         train_federated_mobious(args_mobious)
 
+        
+        subprocess.run(["bash", "scripts/federated/train_federated_openEDS.bash"])
+
+        
+
         mobious_weights = torch.load(weights /"mobious_weights.pth")
         openEDS_weights = torch.load(weights /"openEDS_weights.pth")
         rti_eyes_weights = torch.load(weights /"rti_eyes_weights.pth")
@@ -61,33 +67,37 @@ def federated(Num_of_rounds, weights):
         config_openEDS = OmegaConf.load("config/federated/config_federated_openEDS.yaml")
         config_rti = OmegaConf.load("config/federated/config_federated_rti_eyes.yaml")
 
-        mobious_path = os.path.join(Path.home(), config_mobious.datasets.data_path)
-        openeds_path = os.path.join(Path.home() ,config_openEDS.datasets.data_path)
-        rti_path = os.path.join(Path.home(), config_rti.datasets.data_path)
+        config_mobious = OmegaConf.load("configs/federated/config_federated_mobious.yaml")
+        config_openEDS = OmegaConf.load("configs/federated/config_federated_openEDS.yaml")
+        config_rti = OmegaConf.load("configs/federated/config_federated_rti_eyes.yaml")
+
+        mobious_path = os.path.join(Path.home(), config_mobious.dataset.data_path)
+        openeds_path = os.path.join(Path.home() ,config_openEDS.dataset.data_path)
+        rti_path = os.path.join(Path.home(), config_rti.dataset.data_path)
 
 
         mobious_size = len(MobiousDataset(mobious_path))
         openEDS_size = len(EyeDataset(openeds_path))
         rti_eyes_size = len(Rti_Eyes_Dataset(rti_path))
-        
+
         #mobious_size = 3559
         #openEDS_size = 27431
-        #rti_eyes_size = 8000
+        #rti_eyes_size = 8000  # dynamic for RTI since it varies
+
+        
 
         dataset_weights = [mobious_weights, openEDS_weights, rti_eyes_weights]
-        #dataset_weights = [rti_eyes_weights]
         dataset_sizes = [mobious_size, openEDS_size, rti_eyes_size]
-        #dataset_sizes = [rti_eyes_size]
 
 
         new_global_model = fedAvg(dataset_weights, dataset_sizes)
-        mobious_weights_path = os.path.join(pathlib.Path.home(), "Scratch/scratch/ccaekqu/datasets/ready/ready/mobious/models/15-Jul-2026_12-01-38_cpu/mobious_weights.pth")
+        mobious_weights_path = os.path.join(pathlib.Path.home(), "Scratch/scratch/ccaekqu/datasets/ready/ready/mobious/models/15-Jul-2026_12-01-38_cpu/mobious_weights.pth") #change global model filename to avoid confusion with local model weights
         #mobious_weights_path = os.path.join(pathlib.Path.home(), "downloads/ready/datasets/ready/mobious/models/15-Jul-2026_12-01-38_cpu/mobious_weights.pth")
         os.makedirs(os.path.dirname(mobious_weights_path), exist_ok=True)
         torch.save(new_global_model, mobious_weights_path)
 
 
-        print(f"Federated learning complete — {Num_of_rounds} rounds finished")
+        print(f"Federated learning complete  {Num_of_rounds} rounds finished")
         print(f"Global model saved to: {mobious_weights_path}")
 
 if __name__ == "__main__":
@@ -99,5 +109,10 @@ if __name__ == "__main__":
     #weights_path = "downloads/ready/datasets/ready/federated"
     weights = pathlib.Path(weights_path)
     
-    federated(5, weights)
-    logger.info(f"##################   DONE #############")
+    federated(3, weights)
+    logger.info(f"##################   DONE   #############")
+
+    logger.info(f"############ INFERENCE FEDERATED ############")
+
+    args_inference = Namespace(config_file="configs/federated/config_inference_federated.yaml")
+    inference_federated(args_inference)

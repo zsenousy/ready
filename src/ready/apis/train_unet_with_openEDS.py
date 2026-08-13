@@ -247,7 +247,7 @@ if __name__ == "__main__":
                 #     "models/o.pth",
                 # )
 
-            if j == 200:
+            if j == 700:
                 break
         print(f"Average loss @ epoch: {sum_loss / (j*trainloader.batch_size)}")
 
