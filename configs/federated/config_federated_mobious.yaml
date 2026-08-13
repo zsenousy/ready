@@ -35,5 +35,5 @@ model_hyperparameters:
     batch_size: 32
      #set to 0 to save enough RAM for training on CPU
     num_workers: 0
-    epochs: 10
+    epochs: 6
     learning_rate: 0.003
