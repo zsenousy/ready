@@ -93,7 +93,7 @@ def federated(Num_of_rounds, weights):
         torch.save(new_global_model, mobious_weights_path)
 
 
-        print(f"Federated learning complete — {Num_of_rounds} rounds finished")
+        print(f"Federated learning complete  {Num_of_rounds} rounds finished")
         print(f"Global model saved to: {mobious_weights_path}")
 
 if __name__ == "__main__":
