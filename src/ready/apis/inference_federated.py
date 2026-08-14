@@ -116,7 +116,7 @@ def main(args):
             label = labels[0].unsqueeze(0)
         
             output = model(image)
-            temperature = 0.001
+            temperature = 1.0
             pred = torch.argmax(F.softmax(output / temperature, dim=1), dim=1)
         
             if j <=  25:
@@ -152,7 +152,7 @@ def main(args):
             label = labels[0].unsqueeze(0)
         
             output = model(image)
-            temperature = 0.001
+            temperature = 1.0
             pred = torch.argmax(F.softmax(output / temperature, dim=1), dim=1)
         
                 #save at least first 5 images for each dataset
@@ -193,7 +193,7 @@ def main(args):
     
             output = model(image)
 
-            temperature = 0.001
+            temperature = 1.0
             pred = torch.argmax(F.softmax(output / temperature, dim=1), dim=1)
     
             if j <= 25:
