@@ -1,111 +1,101 @@
-# MYRIAD - FEDERATED LEARNING
+# Cricket machine: ARM CPU with A100 Nvidia GPU (80GB)
 
-Instructions for connecting and training models for federated Learning with Myriad HPC Cluster
+Instructions for connecting and training models using an ARM CPU with an A100 Nvidia GPU. 
+Some steps have already been completed and are noted in square brackets.
 
 ## Features
 * HD: 5TB
-* GPU: Tesla V100-PCIE-32GB or NVIDIA A100 80GB 
-* STORAGE: send all datasets to Scratch and then run from there - /home/ccxxxxx/Scratch/scratch/ccxxxxx/datasets/
+* GPU: NVIDIA A100, A100 , 80 GB HBM2, 1.6 TB/sec https://www.nvidia.com/content/dam/en-zz/Solutions/Data-Center/a100/pdf/nvidia-a100-datasheet.pdf
+* https://www.ucl.ac.uk/advanced-research-computing/coming-soon-platforms
 
-## Connect to Myriad
+## Connect to cricket
 1. Connect to `vpn.ucl.ac.uk` using cisco https://www.ucl.ac.uk/isd/services/get-connected/ucl-virtual-private-network-vpn
 2. Connect to the server
 ```bash
-SSH TO MYRIAD
-ssh ccxxxxx@myriad.rc.ucl.ac.uk
+ssh -X ccxxxxx@cricket.rc.ucl.ac.uk
+xterm -rv & # to open as many terminals you want
 ```
 
-## ENVIRONMENT SETUP - IN ORDER
-
-### CREATE VIRTUAL ENVIRONMENT
-python3 -m venv $HOME/ready/venv_ready
-
-
-### ACTIVATE VIRTUAL ENVIRONMENT
-source /home/ccxxxxx/ready/venv_ready/bin/activate
-
-
-### Load modules
-* module unload compilers mpi gcc-libs
-* module load gcc-libs/10.2.0
-* module load python3/3.9-gnu-10.2.0
-* module load pytorch/2.1.0/gpu
-* pip3 install --user ".[dev]" --no-deps
-
-### SET PYTHON PATH
-export PYTHONPATH=/home/ccxxxxx/ready/venv_ready/lib/python3.9/site-packages:/home/ccxxxxx/.python3local/lib/python3.9/site-packages:/home/ccxxxxx/ready/src:$PYTHONPATH
+## [already done] Copying dataset from local device to server
+```bash
+# openEDS.zip
+scp openEDS.zip ccxxxxx@cricket.rc.ucl.ac.uk:~/datasets/openEDS #openEDS.zip #8.0GB ETA 1h at 2MB/s
+# MOBIUS.zip
+scp MOBIUS.zip ccxxxxx@cricket.rc.ucl.ac.uk:~/datasets/mobious #MOBIUS.zip #3.3GB ETA  26mins at 2MB/s
+scp strain-morbious.zip ccxxxxx@cricket.rc.ucl.ac.uk:~/datasets/mobious #34MB   1.9MB/s   00:17
+```
 
 
-### INSTALL READY PACKAGES
-python -m pip install matplotlib scikit-image scikit-learn loguru omegaconf flwr "urllib3<2" tifffile imageio numpy==1.26.4
+## Container
 
-## DATASET PATHS
-* MOBIOUS: /home/ccxxxxx/Scratch/scratch/ccxxxxx/datasets/mobious/mobious/MOBIOUS/train100per_1144
-* OpenEDS: /home/ccxxxxx/Scratch/scratch/ccxxxxx/datasets/ready/ready/openEDS/openEDS/
-* RIT-EYES: /home/ccxxxxx/Scratch/scratch/ccxxxxx/datasets/s-natural/s-natural/s-natural
-* FEDERATED-WEIGHTS : /home/ccxxxxx/Scratch/scratch/ccxxxxx/datasets/ready/ready/federated
-* INFERENCE: /home/ccxxxxx/Scratch/scratch/ccxxxxx/datasets/ready/ready/inference/inference_results
-* GLOBAL MODEL: /home/ccxxxxx/Scratch/scratch/ccxxxxx/datasets/mobious/models/15-Jul-2026_12-01-38_cpu
+### [Already done] Setting up /opt/nvidia/containers 
+```bash
+mkdir -p containers && cd containers
+#cd containers
+cp /opt/nvidia/containers/pytorch:24.04-y3.sif .
+apptainer run pytorch:24.04-y3.sif
+python
+import torch
+torch.cuda.is_available()
 
-## TRAINING FEDERATED ON MYRIAD
-qsub run_federated.sh
+watch -n 2 nvidia-smi #in another terminal to see activity every 2secs
+```
 
-## JOB SCRIPT (run_federated.sh)
-* #!/bin/bash -l
-* #$ -l h_rt=24:0:0
-* #$ -l mem=16G
-* #$ -l gpu=1
-* #$ -N federated_unet
-* #$ -cwd
-* #$ -o federated_output_$JOB_ID.log
-* #$ -e federated_error_$JOB_ID.log
+### Lauch container
+* Pull latest changes and checkout your branch
+```bash
+# Updates repo
+cd $HOME/ready
+git pull
+git checkout FEATURE_BRANCH
+```
 
-* module unload compilers mpi gcc-libs
-* module load gcc-libs/10.2.0
-* module load python3/3.9-gnu-10.2.0
-* module load pytorch/2.1.0/gpu
+* [Just once if this is your first time in the server] Install package
+```bash
+uv venv --python 3.12
+source .venv/bin/activate
+uv pip install -e ".[test,learning,model_optimisation]"
+```
 
-* export PYTHONPATH=/home/ccxxxxx/ready/venv_ready/lib/python3.9/site-packages:/home/ccxxxxx/.python3local/lib/python3.9/site-packages:/home/ccaxxxxx/ready/src:$PYTHONPATH
+* Launch container 
+```bash
+bash docs/cricket/launch_container_in_cricket.bash <ADD_USERNAME (eg. ccxxxxx)>
+```
 
-* source /home/ccxxxx/ready/venv_ready/bin/activate
+## inside apptainer>
+* [already created] Create data paths 
+```bash
+mkdir -p $HOME/datasets/ready/mobious/models
+```
 
-* cd $HOME/ready
+* Change to project path
+```bash
+cd $HOME/ready
+export PYTHONPATH=$HOME/ready/src #. #$HOME/<ADD_REPO_PATH>
+```
 
-* python src/ready/apis/train_federated.py
+* Train models but GOTO [models/README.md](../models/README.md) for further instructions
+```bash
+vim configs/models/unet/config_train_unet_with_mobious.yaml #to edit parameters
+bash scripts/models/train_unet_with_mobious.bash #to start training
 
-## INFERENCE ON LOGIN NODE
-* module unload compilers mpi gcc-libs
-* module load gcc-libs/10.2.0
-* module load python3/3.9-gnu-10.2.0
-* module load pytorch/2.1.0/gpu
-* export PYTHONPATH=/home/ccxxxxx/ready/venv_ready/lib/python3.9/site-packages:/home/ccxxxxx/.python3local/lib/python3.9/site-packages:/home/ccxxxxx/ready/src:$PYTHONPATH
-* source /home/ccxxxxx/ready/venv_ready/bin/activate
-* cd $HOME/ready
-* python src/ready/apis/inference_federated.py -c configs/federated/config_inference_federated.yaml
+#type `exit` in the terminal to exit
+```
 
-## INFERENCE AS A JOB
-qsub run_inference_federated.sh
+## Copying files (models) to local host
+### In your server
+The following are scripts that you can comprese and copy 
+```bash
+## tar paths in server
+#outside apptainer and root path of repo!
+vim configs/files/config_model_pathfiles.yaml #edit model details
+bash scripts/files/tarfiles.bash
+```
 
-
-### JOB SCRIPT (run_inference_federated.sh)
-* #!/bin/bash -l
-* #$ -l h_rt=06:0:0
-* #$ -l mem=10G
-* #$ -l gpu=1
-* #$ -N inference_federated
-* #$ -cwd
-* #$ -o inference_output.log
-* #$ -e inference_error.log
-
-* module unload compilers mpi gcc-libs
-* module load gcc-libs/10.2.0
-* module load python3/3.9-gnu-10.2.0
-* module load pytorch/2.1.0/gpu
-
-* export PYTHONPATH=/home/ccxxxxx/ready/venv_ready/lib/python3.9/site-packages:/home/ccxxxxx/.python3local/lib/python3.9/site-packages:/home/ccxxxxx/ready/src:$PYTHONPATH
-
-* source /home/ccxxxxx/ready/venv_ready/bin/activate
-
-* cd $HOME/ready
-
-* python src/ready/apis/inference_federated.py -c configs/federated/config_inference_federated.yaml
+## In your local device
+Moving compressed files to local device.
+From the root path of the github repo
+```bash
+vim scripts/files/moving_models.bash ccxxxxx #<SERVERUSERNAME (e.g., ccxxxxx)>
+bash scripts/files/moving_models.bash ccxxxxx #<SERVERUSERNAME (e.g., ccxxxxx)>
+```
