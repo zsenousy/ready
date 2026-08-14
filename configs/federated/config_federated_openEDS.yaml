@@ -19,7 +19,7 @@ pretrained_model:
 model_hyperparameters:
     batch_size: 32
     num_workers: 0
-    epochs: 6
+    epochs: 12
     #epochs: 100
     learning_rate: 0.003
 
