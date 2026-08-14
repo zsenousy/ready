@@ -171,7 +171,7 @@ def main(args):
 
         #weight decay to prevent overfitting of model and AdamW optimizer to improve generalization of model
         optimizer = optim.AdamW(model.parameters(),lr= learning_rate, weight_decay=1e-4)  
-        loss_fn = nn.CrossEntropyLoss()
+        loss_fn = nn.CrossEntropyLoss(weight=torch.tensor([0.1, 15.0, 15.0, 50.0]).float())
 
         if cuda_available:
             model.cuda()
