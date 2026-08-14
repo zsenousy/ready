@@ -149,7 +149,7 @@ if __name__ == "__main__":
         logger.info("No .pth files found")
     
     optimizer = optim.AdamW(model.parameters(), lr=learning_rate, weight_decay=1e-4)
-    loss_fn = nn.CrossEntropyLoss(weight=torch.tensor([0.1, 15.0, 15.0, 50.0]).float())
+    loss_fn = nn.CrossEntropyLoss(weight=torch.tensor([0.1, 15.0, 15.0, 50.0]).float()) #gives higher penalty to misclassifying the smaller classes (pupil, iris and sclera) than the larger class (background)
 
     if cuda_available:
         model.cuda()

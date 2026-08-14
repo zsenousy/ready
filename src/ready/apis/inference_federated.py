@@ -131,7 +131,8 @@ def main(args):
                 plt.close()
             logger.info(f" openeds done")
             print(f"openeds done")
-        
+
+            #metrics = evaluate(pred, label)
             metrics = evaluate(output, labels, n_classes=4)
             openEDS_miou.append(metrics['miou'])
             openEDS_dice.append(metrics['dice'])
@@ -169,6 +170,7 @@ def main(args):
             logger.info(f" mobious done")
             print(f"mobious done")
         
+            #metrics = evaluate(pred, label)
             metrics = evaluate(output, labels, n_classes=4)
             mobious_miou.append(metrics['miou'])
             mobious_dice.append(metrics['dice'])
@@ -210,7 +212,8 @@ def main(args):
                 plt.close()
             logger.info(f" rit done")
             print(f"rit done")
-    
+
+            #metrics = evaluate(pred, label)
             metrics = evaluate(output, labels, n_classes=4)
             rti_miou.append(metrics['miou'])
             rti_dice.append(metrics['dice'])
