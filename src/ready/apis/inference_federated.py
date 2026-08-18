@@ -116,7 +116,7 @@ def main(args):
             label = labels[0].unsqueeze(0)
         
             output = model(image)
-            temperature = 0.001
+            temperature = 1.0
             pred = torch.argmax(F.softmax(output / temperature, dim=1), dim=1)
         
             if j <=  25:
@@ -131,8 +131,9 @@ def main(args):
                 plt.close()
             logger.info(f" openeds done")
             print(f"openeds done")
-        
-            metrics = evaluate(output, labels)
+
+            #metrics = evaluate(pred, label)
+            metrics = evaluate(output, labels, n_classes=4)
             openEDS_miou.append(metrics['miou'])
             openEDS_dice.append(metrics['dice'])
             openEDS_hausdorff.append(metrics['hausdorff_distance'])
@@ -152,7 +153,7 @@ def main(args):
             label = labels[0].unsqueeze(0)
         
             output = model(image)
-            temperature = 0.001
+            temperature = 1.0
             pred = torch.argmax(F.softmax(output / temperature, dim=1), dim=1)
         
                 #save at least first 5 images for each dataset
@@ -169,7 +170,8 @@ def main(args):
             logger.info(f" mobious done")
             print(f"mobious done")
         
-            metrics = evaluate(output, labels)
+            #metrics = evaluate(pred, label)
+            metrics = evaluate(output, labels, n_classes=4)
             mobious_miou.append(metrics['miou'])
             mobious_dice.append(metrics['dice'])
             mobious_hausdorff.append(metrics['hausdorff_distance'])
@@ -193,7 +195,7 @@ def main(args):
     
             output = model(image)
 
-            temperature = 0.001
+            temperature = 1.0
             pred = torch.argmax(F.softmax(output / temperature, dim=1), dim=1)
     
             if j <= 25:
@@ -210,8 +212,9 @@ def main(args):
                 plt.close()
             logger.info(f" rit done")
             print(f"rit done")
-    
-            metrics = evaluate(output, labels)
+
+            #metrics = evaluate(pred, label)
+            metrics = evaluate(output, labels, n_classes=4)
             rti_miou.append(metrics['miou'])
             rti_dice.append(metrics['dice'])
             rti_hausdorff.append(metrics['hausdorff_distance'])

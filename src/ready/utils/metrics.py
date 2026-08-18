@@ -116,7 +116,7 @@ def hausdorff1(pred_mask, mask, smooth=1e-10, n_classes=4):
     
     return np.nanmean(hausdorff_per_class)
 
-def evaluate(pred_mask, mask, smooth=1e-10, n_classes=1, skip_hausdorff=False, **kwargs):
+def evaluate(pred_mask, mask, smooth=1e-10, n_classes=4, skip_hausdorff=False, **kwargs):
 
     """
         Evaluate model performance using pixel accuracy, f1, recall, precision, fbeta, mIoU, Dice Coefficient.
