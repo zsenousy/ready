@@ -1,0 +1,32 @@
+model:
+    debug_print_flag: False #Use 1 (True) to enable or 0 (False) to disable.
+    weight_fn: None #True #False #TOTEST
+
+dataset:
+    use_github_data_path_flag: False
+    github_data_path: "data/snatural"
+    data_path: "ready/datasets/s-natural/s-natural/augmented"
+    models_path: "datasets/ready/snatural/unet_models_augmented"
+    checkpoint_path: "ready/datasets/?"
+
+transforms:
+    transform_operation: transforms_img
+    target_transform_operation: transforms_rotations
+
+datasets_splitting_ratios:
+    train_set: 0.70
+    validation_set: 0.15
+    test_set: 0.15
+
+pretrained_model:
+    evaluation_with_pretrained_model_flag: False
+    models_folder_path: "datasets/ready/snatural/unet_models_augmented"
+    checkpoint_path: "datasets/?"
+    model_name_for_eval: "weights_24-Jul-2025_16-55-48.pth"
+
+model_hyperparameters:
+    batch_size: 64
+    num_workers: 0
+    epochs: 25
+    #epochs: 100
+    learning_rate: 0.003

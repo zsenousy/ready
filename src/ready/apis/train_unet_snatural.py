@@ -18,7 +18,7 @@ from omegaconf import OmegaConf
 from torchvision.transforms import v2 as transforms
 
 from ready.models.unet import UNet
-from ready.utils.datasets import EyeDataset
+from ready.utils.datasets import Rti_Eyes_Dataset
 from ready.utils.metrics import evaluate
 from ready.utils.utils import create_data_loaders, set_data_directory, evaluate_model
 
@@ -124,15 +124,15 @@ if __name__ == "__main__":
     cuda_available = torch.cuda.is_available()
     logger.info(f"cuda_available: {cuda_available}")
 
-    full_dataset = EyeDataset(
+    full_dataset = Rti_Eyes_Dataset(
         FULL_DATA_PATH+"/",
         transform=transforms.Compose([
             transforms.ToImage(),
-            transforms.Resize((224,224), interpolation=transforms.InterpolationMode.BILINEAR, antialias=True),
+            transforms.Resize((224, 224), interpolation=transforms.InterpolationMode.BILINEAR, antialias=True),
         ]),
         target_transform=transforms.Compose([
             transforms.ToImage(),
-            transforms.Resize((224,224), interpolation=transforms.InterpolationMode.NEAREST, antialias=True),
+            transforms.Resize((224, 224), interpolation=transforms.InterpolationMode.NEAREST, antialias=True),
         ]),
     )
 
@@ -182,17 +182,18 @@ if __name__ == "__main__":
             loss = loss_fn(output, labels)
             loss.backward()
             optimizer.step()
-
             sum_loss += loss.item()
             if j % 10 == 0 or j == 1:
                 batch_metrics = evaluate(output, labels, n_classes=4, average="weighted")
                 epoch_metrics.append(batch_metrics)
-                print(f"Loss at {j} mini-batch {loss.item()/trainloader.batch_size}")
-
             if j == 200:
                 break
 
+            if j % 10 == 0 or j == 1:
+                print(f"Loss at {j} mini-batch {loss.item()/trainloader.batch_size}")
+
         print(f"Average loss @ epoch: {sum_loss / (j*trainloader.batch_size)}")
+
         avg_metrics = {
             key: sum(m[key] for m in epoch_metrics) / len(epoch_metrics)
             for key in epoch_metrics[0]
@@ -226,6 +227,7 @@ if __name__ == "__main__":
         model.train()
 
         print(f"Average validation loss @ epoch: {val_sum_loss / (vj*validationloader.batch_size)}")
+
         val_avg_metrics = {
             key: sum(m[key] for m in val_epoch_metrics) / len(val_epoch_metrics)
             for key in val_epoch_metrics[0]

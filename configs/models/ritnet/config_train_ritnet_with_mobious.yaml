@@ -1,0 +1,26 @@
+model:
+    debug_print_flag: False
+    weight_fn: None
+dataset:
+    use_github_data_path_flag: False
+    github_data_path: "data/mobious/sample-frames/test640x400_20samples"
+    data_path: "ready/datasets/mobious/original"
+    models_path: "datasets/ready/mobious/ritnet_models"
+    checkpoint_path: "datasets/?"
+transforms:
+    transform_operation: transforms_img
+    target_transform_operation: transforms_rotations
+datasets_splitting_ratios:
+    train_set: 0.70
+    validation_set: 0.15
+    test_set: 0.15
+pretrained_model:
+    evaluation_with_pretrained_model_flag: False
+    models_folder_path: "datasets/ready/mobious/ritnet_models"
+    checkpoint_path: "datasets/?"
+    model_name_for_eval: "weights_24-Jul-2025_16-55-48.pth"
+model_hyperparameters:
+    batch_size: 8
+    num_workers: 0
+    epochs: 25
+    learning_rate: 0.003
