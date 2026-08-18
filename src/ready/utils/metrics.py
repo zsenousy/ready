@@ -83,6 +83,39 @@ def dice(pred_mask, mask, smooth=1e-10, n_classes=4):
 
 
 def evaluate(pred_mask, mask, smooth=1e-10, n_classes=4, **kwargs):
+def hausdorff1(pred_mask, mask, smooth=1e-10, n_classes=4):
+    """
+    Calculate mean Hausdorff Distance across all classes (background, sclera, pupil, iris).
+    Measures the maximum boundary distance between predicted and ground truth masks.
+    Lower is better. 0 is equal to perfect boundary match.
+    
+    Args:
+        pred_mask: predicted mask (numpy array, values 0 to n_classes-1)
+        mask: ground truth mask (numpy array, values 0 to n_classes-1)
+        n_classes: number of classes
+    """
+    hausdorff_per_class = []
+    
+    for clas in range(0, n_classes):
+        true_class = pred_mask == clas
+        true_label = mask == clas
+        
+        # Skip if neither prediction nor ground truth has this class
+        if np.sum(true_label) == 0 and np.sum(true_class) == 0:
+            hausdorff_per_class.append(np.nan)
+            continue
+            
+        # If one is empty but not the other, distance is maximum possible
+        if np.sum(true_label) == 0 or np.sum(true_class) == 0:
+            hausdorff_per_class.append(np.sqrt(pred_mask.shape[0]**2 + pred_mask.shape[1]**2))
+            continue
+            
+        dist = hausdorff_distance(true_label,true_class)
+        hausdorff_per_class.append(dist)
+    
+    return np.nanmean(hausdorff_per_class)
+
+def evaluate(pred_mask, mask, smooth=1e-10, n_classes=4, skip_hausdorff=False, **kwargs):
 
     """
         Evaluate model performance using pixel accuracy, f1, recall, precision, fbeta, mIoU, Dice Coefficient.

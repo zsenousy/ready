@@ -62,27 +62,23 @@ def federated(Num_of_rounds, weights):
         mobious_weights = torch.load(weights /"mobious_weights.pth")
         openEDS_weights = torch.load(weights /"openEDS_weights.pth")
         rti_eyes_weights = torch.load(weights /"rti_eyes_weights.pth")
-        
-        config_mobious = OmegaConf.load("config/federated/config_federated_mobious.yaml")
-        config_openEDS = OmegaConf.load("config/federated/config_federated_openEDS.yaml")
-        config_rti = OmegaConf.load("config/federated/config_federated_rti_eyes.yaml")
 
-        config_mobious = OmegaConf.load("configs/federated/config_federated_mobious.yaml")
-        config_openEDS = OmegaConf.load("configs/federated/config_federated_openEDS.yaml")
-        config_rti = OmegaConf.load("configs/federated/config_federated_rti_eyes.yaml")
+        #config_mobious = OmegaConf.load("configs/federated/config_federated_mobious.yaml")
+        #config_openEDS = OmegaConf.load("configs/federated/config_federated_openEDS.yaml")
+        #config_rti = OmegaConf.load("configs/federated/config_federated_rti_eyes.yaml")
 
-        mobious_path = os.path.join(Path.home(), config_mobious.dataset.data_path)
-        openeds_path = os.path.join(Path.home() ,config_openEDS.dataset.data_path)
-        rti_path = os.path.join(Path.home(), config_rti.dataset.data_path)
+        #mobious_path = os.path.join(Path.home(), config_mobious.dataset.data_path)
+        #openeds_path = os.path.join(Path.home() ,config_openEDS.dataset.data_path)
+        #rti_path = os.path.join(Path.home(), config_rti.dataset.data_path)
 
 
-        mobious_size = len(MobiousDataset(mobious_path))
-        openEDS_size = len(EyeDataset(openeds_path))
-        rti_eyes_size = len(Rti_Eyes_Dataset(rti_path))
+        #mobious_size = len(MobiousDataset(mobious_path))
+        #openEDS_size = len(EyeDataset(openeds_path))
+        #rti_eyes_size = len(Rti_Eyes_Dataset(rti_path))
 
-        #mobious_size = 3559
-        #openEDS_size = 27431
-        #rti_eyes_size = 8000  # dynamic for RTI since it varies
+        mobious_size = 3559
+        openEDS_size = 27431
+        rti_eyes_size = 8000  # dynamic for RTI since it varies
 
         
 
@@ -109,7 +105,7 @@ if __name__ == "__main__":
     #weights_path = "downloads/ready/datasets/ready/federated"
     weights = pathlib.Path(weights_path)
     
-    federated(3, weights)
+    federated(10, weights)
     logger.info(f"##################   DONE   #############")
 
     logger.info(f"############ INFERENCE FEDERATED ############")
